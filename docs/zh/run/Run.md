@@ -66,7 +66,7 @@ java -jar Server.jar
 
 <img src="../img/Question3.png"></img>
 
-#### 此问题分析：JDK版本低于11，本问题主要是 RW-HPS 使用 Java11 编译, 导致无法使用 Java8 运行。
+#### 此问题分析：JDK版本低于21，本问题主要是 RW-HPS 使用 Java11 编译, 导致无法使用 Java8 运行。
 
 <img src="../img/Question4.png"></img>
 

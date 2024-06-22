@@ -109,19 +109,17 @@ object Main {
 
         Data.config = BeanCoreConfig.stringToClass()
         Data.configServer = BeanServerConfig.stringToClass()
-
         Data.configRelay = BeanRelayConfig.stringToClass()
 
-        Data.core.load()
+        Initialization.startInit()
         Initialization.loadLib()
 
         clog(Data.i18NBundle.getinput("server.hi"))
         clog(Data.i18NBundle.getinput("server.project.url"))
         clog(Data.i18NBundle.getinput("server.thanks"))
 
-        clog("ObjectNotFoundException: You have no object")
-
         // Test Block
+
         /* 加载 ASM */
         HeadlessProxyClass()
 

@@ -25,7 +25,7 @@ import java.net.URL
  */
 class ZipFileSystemLocation(private val data: OrderedMap<String, ByteArray>): ResourceLocation {
     override fun getResourceAsStream(ref: String): InputStream? {
-        return data.get(ref)?.let { DisableSyncByteArrayInputStream(it) }
+        return data[ref]?.let { DisableSyncByteArrayInputStream(it) }
     }
 
     override fun getResource(ref: String?): URL? {

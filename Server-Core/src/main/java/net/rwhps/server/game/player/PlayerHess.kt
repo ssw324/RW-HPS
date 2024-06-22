@@ -135,7 +135,7 @@ open class PlayerHess(
         @Nls
         text: String
     ) {
-        con?.sendSystemMessage(text)
+        con?.sendSystemMessage(text) ?: noBindError()
     }
 
     @Throws(ImplementedException.PlayerImplementedException::class)

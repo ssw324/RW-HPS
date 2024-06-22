@@ -9,8 +9,8 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.net.core.IRwHps
 
 
-class ServerStartTypeEvent(val serverNetType: IRwHps.NetType): AbstractGlobalEvent
+class ServerStartTypeEvent(val serverNetType: IRwHps.NetType): AbstractGlobalEventImpl

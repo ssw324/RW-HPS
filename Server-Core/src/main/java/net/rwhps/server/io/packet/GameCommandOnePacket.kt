@@ -14,7 +14,7 @@ import net.rwhps.server.game.enums.GameUnitActions
 import net.rwhps.server.game.manage.HeadlessModuleManage
 import net.rwhps.server.game.player.PlayerHess
 import net.rwhps.server.io.GameInputStream
-import net.rwhps.server.io.packet.units.OperationUnitPacket
+import net.rwhps.server.io.packet.block.OperationUnitPacket
 import net.rwhps.server.struct.list.Seq
 
 /**

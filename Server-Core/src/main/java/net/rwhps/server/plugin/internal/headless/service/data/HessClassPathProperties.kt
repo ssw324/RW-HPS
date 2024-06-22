@@ -13,7 +13,9 @@ package net.rwhps.server.plugin.internal.headless.service.data
  * @author Dr (dr@der.kim)
  */
 internal object HessClassPathProperties {
-    const val path = "net.rwhps.server.plugin.internal.headless.inject"
-    const val CorePath = "$path.core"
+    const val path = "net.rwhps.server"
+    const val fastASMClassPath = "$path.dependent.redirections.game.clas"
+    const val headlessPath = "$path.plugin.internal.headless.inject"
+    const val corePath = "$headlessPath.core"
     const val GameHessPath = "com.corrodinggames.rts"
 }

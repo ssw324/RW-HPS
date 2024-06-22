@@ -9,7 +9,7 @@
 
 package net.rwhps.server.core
 
-import net.rwhps.server.util.file.plugin.value.Value
+import net.rwhps.server.io.packet.type.AbstractPacketType
 import net.rwhps.server.net.core.TypeConnect
 import net.rwhps.server.net.core.server.AbstractNetConnect
 import net.rwhps.server.net.core.server.packet.AbstractNetPacket
@@ -27,7 +27,6 @@ import java.lang.reflect.Constructor
  * TODO
  *
  * 1 使其通过扫描注解来判断继承的主类
- * 2 Get数据为 Runnable, 可以自定义一个池出来 (Hess 使用方案)
  *
  * 无限可能
  */
@@ -35,7 +34,7 @@ object ServiceLoader {
     private val ServiceLoaderData: MutableMap<String, Class<*>> = HashMap()
     private val ServiceCustomLoaderData: MutableMap<String, String> = HashMap()
 
-    private val ServiceObjectData: MutableMap<String, Value<*>> = HashMap()
+    private val ServiceObjectData: MutableMap<String, Any> = HashMap()
 
     /**
      * Get service instance
@@ -90,6 +89,42 @@ object ServiceLoader {
     }
 
     /**
+     * 获取服务 Class
+     * @param serviceType ServiceType : 服务类型
+     * @param serviceName String      : 名称
+     * @return Class<*>               : Class
+     */
+    fun getServiceObject(serviceType: ServiceType, serviceName: String): Any {
+        val serviceClass = ServiceObjectData[serviceType.name + serviceName]
+        if (serviceClass != null) {
+            return serviceClass
+        } else {
+            throw ImplementedException("${serviceType.name}:$serviceName")
+        }
+    }
+
+    /**
+     * Add a new service based on service type
+     * @param serviceType  ServiceType
+     * @param serviceName  Service Name
+     * @param serviceObject Object of service
+     * @param cover        Whether to overwrite existing
+     * @throws VariableException
+     */
+    @JvmOverloads
+    @Throws(VariableException.TypeMismatchException::class)
+    fun addServiceObject(serviceType: ServiceType, serviceName: String, serviceObject: Any, cover: Boolean = false) {
+        if (ReflectionUtils.findSuperClass(serviceObject.javaClass, serviceType.classType)) {
+            throw VariableException.TypeMismatchException("[AddService] ${serviceType.classType} : ${serviceObject.javaClass.name}")
+        }
+        // 跳过已经存在的
+        if (ServiceObjectData.containsKey(serviceType.name + serviceName) && !cover) {
+            return
+        }
+        ServiceObjectData[serviceType.name + serviceName] = serviceObject
+    }
+
+    /**
      * 这是 RW-HPS 使用的服务类
      * @property classType 父类
      * @constructor
@@ -97,8 +132,16 @@ object ServiceLoader {
     enum class ServiceType(val classType: Class<*>) {
         Core(Object::class.java),
         IRwHps(net.rwhps.server.net.core.IRwHps::class.java),
+
+        // 协议处理器
+        ProtocolType(TypeConnect::class.java),
+        // 协议实现
         Protocol(AbstractNetConnect::class.java),
+
+        // 全局共用包解析器
         ProtocolPacket(AbstractNetPacket::class.java),
-        ProtocolType(TypeConnect::class.java);
+
+        // 包类型解析器
+        PacketType(AbstractPacketType::class.java);
     }
 }

@@ -19,8 +19,8 @@ import io.netty.util.Attribute
 import io.netty.util.AttributeKey
 import io.netty.util.concurrent.DefaultEventExecutorGroup
 import io.netty.util.concurrent.EventExecutorGroup
-import net.rwhps.server.net.code.tcp.PacketDecoder
-import net.rwhps.server.net.code.tcp.PacketEncoder
+import net.rwhps.server.net.code.tcp.GamePacketDecoder
+import net.rwhps.server.net.code.tcp.GamePacketEncoder
 import net.rwhps.server.net.handler.tcp.AcceptorIdleStateTrigger
 import net.rwhps.server.net.handler.tcp.NewServerHandler
 import net.rwhps.server.util.concurrent.threads.ThreadFactoryName
@@ -52,9 +52,9 @@ abstract class AbstractNet: ChannelInitializer<SocketChannel>() {
         channelPipeline.addLast(idleStateTrigger)
     }
 
-    protected fun addPacketDecoderAndEncoder(channelPipeline: ChannelPipeline) {
-        channelPipeline.addLast(PacketDecoder())
-        channelPipeline.addLast(PacketEncoder())
+    protected open fun addPacketDecoderAndEncoder(channelPipeline: ChannelPipeline) {
+        channelPipeline.addLast(GamePacketDecoder())
+        channelPipeline.addLast(GamePacketEncoder())
     }
 
     protected fun addNewServerHandler(channelPipeline: ChannelPipeline) {

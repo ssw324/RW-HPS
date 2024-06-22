@@ -54,10 +54,14 @@ internal class LinkGameNet: AbstractLinkGameNet {
 
     override fun startHeadlessServer(port: Int, passwd: String?) {
         val netEngine = GameEngine.netEngine
+
         GameEngine.settingsEngine.apply {
-            setValueDynamic("networkPort", port.toString())
-            setValueDynamic("udpInMultiplayer", false.toString())
-            setValueDynamic("saveMultiplayerReplays", Data.configServer.saveRePlayFile.toString())
+//            setValueDynamic("networkPort", port.toString())
+//            setValueDynamic("udpInMultiplayer", false.toString())
+//            setValueDynamic("saveMultiplayerReplays", )
+            networkPort = port
+            udpInMultiplayer = false
+            saveMultiplayerReplays = Data.configServer.saveRePlayFile
         }
 
         netEngine.m = port
@@ -99,7 +103,7 @@ internal class LinkGameNet: AbstractLinkGameNet {
                 lastUsePort = port
                 lastUsePasswd = passwd
 
-                GameEngine.data.eventManage.fire(ServerHessStartPort())
+                GameEngine.data.eventManage.fire(ServerHessStartPort(GameEngine.data))
 
                 if (Data.neverEnd) {
                     val mapPlayer = "Valley Arena (10p) [by_uber]@[z;p10]"

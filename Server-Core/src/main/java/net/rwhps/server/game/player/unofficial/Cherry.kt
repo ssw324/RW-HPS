@@ -31,7 +31,7 @@ class Cherry: PlayerHess(
         superAdmin = true
     }
 
-    var outString: Seq<String> = Seq()
+    val outString: Seq<String> = Seq()
 
     override fun sendSystemMessage(text: String) {
         outString.add(text)

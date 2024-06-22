@@ -10,9 +10,9 @@
 package net.rwhps.asm.agent
 
 import net.rwhps.asm.api.Transformer
-import net.rwhps.asm.data.ListenerRedirectionsDataManager
-import net.rwhps.asm.data.RemoveRedirectionsDataManager
-import net.rwhps.asm.data.ReplaceRedirectionsDataManager
+import net.rwhps.asm.data.manager.ListenerRedirectionsDataManager
+import net.rwhps.asm.data.manager.RemoveRedirectionsDataManager
+import net.rwhps.asm.data.manager.ReplaceRedirectionsDataManager
 import net.rwhps.asm.func.Find
 import net.rwhps.asm.transformer.ListenerImpl
 import net.rwhps.asm.transformer.OperationImpl

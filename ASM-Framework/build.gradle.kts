@@ -8,8 +8,8 @@
  */
 
 dependencies {
-    compileOnlyAndTest("org.ow2.asm:asm:9.6")
-    compileOnlyAndTest("org.ow2.asm:asm-tree:9.6")
+    compileOnlyAndTest("org.ow2.asm:asm:9.7")
+    compileOnlyAndTest("org.ow2.asm:asm-tree:9.7")
 }
 
 tasks.jar {

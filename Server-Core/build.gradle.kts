@@ -38,7 +38,7 @@ dependencies {
     api("com.google.code.gson:gson:2.10.1")
     api("org.json:json:20231013")
 
-    implementation("org.apache.commons:commons-compress:1.25.0")
+    implementation("org.apache.commons:commons-compress:1.26.1")
     implementation("org.tukaani:xz:1.9")
     compileOnlyAndTest("com.github.lucasbru:jbsdiff:9810fdcbfd")
 

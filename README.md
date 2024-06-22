@@ -14,8 +14,8 @@ Provide players with the same gaming experience as the official server
 
 _**生命不息，折腾不止**_
 
-**The development team is currently busy and new feature development/maintenance is suspended.**  
-**目前开发团队均处于忙碌, 暂停新功能开发/维护**
+**Thank you for staying with me for four years. We have experienced a lot, but life has dreams and each of them is wonderful. At present, I have no interest in maintenance/development.**  
+**感谢陪伴四年, 我们经历很多, 但是 人生有梦, 各自精彩, 目前我已无兴趣进行维护/开发**
 </div>
 
 #### Currently to be completed
@@ -69,7 +69,7 @@ _**生命不息，折腾不止**_
 
 The game corresponds to the final server version collection
 
-| Game Version |   RW-HPS version   | Download Link |
+| Game Version |   RW-HPS version   | State |
 |:------------:|:------------------:|:-------------:|
 |     1.15     |      DEV      |     BETA      |
 |   ~~1.14~~   | ~~6.0.0-M3（beta）~~ |    Delete     |

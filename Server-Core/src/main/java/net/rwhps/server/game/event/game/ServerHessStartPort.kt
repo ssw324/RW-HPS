@@ -9,7 +9,8 @@
 
 package net.rwhps.server.game.event.game
 
-import net.rwhps.server.game.event.core.AbstractEvent
+import net.rwhps.server.game.event.core.AbstractEventImpl
+import net.rwhps.server.game.headless.core.AbstractGameModule
 
 /**
  * 服务器无头端开启端口监听事件
@@ -17,4 +18,6 @@ import net.rwhps.server.game.event.core.AbstractEvent
  * @date 2023/7/5 10:00
  * @author Dr (dr@der.kim)
  */
-class ServerHessStartPort: AbstractEvent
+class ServerHessStartPort(
+    override val gameModule: AbstractGameModule
+): AbstractEventImpl

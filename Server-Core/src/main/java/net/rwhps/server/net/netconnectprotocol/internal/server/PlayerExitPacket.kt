@@ -17,7 +17,7 @@ package net.rwhps.server.net.netconnectprotocol.internal.server
 
 import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.packet.Packet
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import java.io.IOException
 
 /**

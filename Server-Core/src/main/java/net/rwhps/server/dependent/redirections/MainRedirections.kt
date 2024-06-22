@@ -2,10 +2,10 @@ package net.rwhps.server.dependent.redirections
 
 import net.rwhps.asm.api.listener.RedirectionListener
 import net.rwhps.asm.api.replace.RedirectionReplace
-import net.rwhps.asm.data.ListenerRedirectionsDataManager
+import net.rwhps.asm.data.manager.ListenerRedirectionsDataManager
 import net.rwhps.asm.data.MethodTypeInfoValue
-import net.rwhps.asm.data.RemoveRedirectionsDataManager
-import net.rwhps.asm.data.ReplaceRedirectionsDataManager
+import net.rwhps.asm.data.manager.RemoveRedirectionsDataManager
+import net.rwhps.asm.data.manager.ReplaceRedirectionsDataManager
 import net.rwhps.asm.func.Find
 import net.rwhps.asm.redirections.replace.def.BasicDataRedirections
 

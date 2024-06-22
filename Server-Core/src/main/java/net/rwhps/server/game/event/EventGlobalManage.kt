@@ -9,7 +9,7 @@
 
 package net.rwhps.server.game.event
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.util.concurrent.fature.AbstractFuture
 import java.util.function.Consumer
 
@@ -20,15 +20,15 @@ import java.util.function.Consumer
  * @author Dr (dr@der.kim)
  */
 @Suppress("EXPOSED_SUPER_CLASS")
-class EventGlobalManage: AbstractEventManage(AbstractGlobalEvent::class.java) {
+class EventGlobalManage: AbstractEventManage(AbstractGlobalEventImpl::class.java) {
     /**
      * 执行新事件
      *
      * @param type 全局事件
      */
-    fun fire(type: AbstractGlobalEvent): AbstractFuture<*> = fire0(type)
+    fun fire(type: AbstractGlobalEventImpl): AbstractFuture<*> = fire0(type)
 
-    fun <T: AbstractGlobalEvent> registerListener(eventClass: Class<T>, consumer: Consumer<T>) {
+    fun <T: AbstractGlobalEventImpl> registerListener(eventClass: Class<T>, consumer: Consumer<T>) {
         eventData.addEvent(eventClass) { value ->
             consumer.accept(value)
         }

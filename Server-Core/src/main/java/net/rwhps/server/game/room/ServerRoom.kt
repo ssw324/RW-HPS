@@ -120,7 +120,7 @@ class ServerRoom(
 
         forcedReturn = false
 
-        gameModule.eventManage.fire(ServerGameOverEvent(gameOverData)).await()
+        gameModule.eventManage.fire(ServerGameOverEvent(gameModule, gameOverData)).await()
         gameOverData = null
 
         MapManage.maps.mapData?.clean()

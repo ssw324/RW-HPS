@@ -33,7 +33,7 @@ data class BeanRelayConfig(
     val mainServer: Boolean = true,
     val upList: Boolean = true,
     val mainServerIP: String = "relay.der.kim",
-    val mainServerPort: Int = 4993,
+    val mainServerPort: Int = 4993
 ) {
 
     fun save() {

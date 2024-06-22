@@ -50,6 +50,7 @@ object NetStaticData {
                 }
             }
         }
+
     lateinit var RwHps: IRwHps
 
     @JvmField

@@ -6,10 +6,23 @@
  *
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
+
 package net.rwhps.server.game.event.core
 
+import net.rwhps.server.func.Control
+
 /**
- * @date 2023/7/5 10:09
+ * 全部事件的父方法, 提供一个判断接口
+ *
+ * @date 2023/7/16 12:56
  * @author Dr (dr@der.kim)
  */
-interface AbstractEvent: AbstractEventCore
+interface AbstractEvent {
+    /**
+     * 判断能否把当前事件传递下一个
+     * @return Boolean
+     */
+    fun status(): Control.EventNext {
+        return Control.EventNext.CONTINUE
+    }
+}

@@ -12,7 +12,7 @@
 package net.rwhps.server.util.annotations.core
 
 /**
- * 注解在 AbstractEvent/AbstractGlobalEvent 类上 :
+ * 注解在 AbstractEventImpl/AbstractGlobalEventImpl 类上 :
  * 表明事件是同时交给多个监听器, 而不是按顺序
  * 所以这个事件对应接收器是只读的, 你的操作不能影响后续
  *

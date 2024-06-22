@@ -14,10 +14,10 @@ import net.rwhps.server.data.global.NetStaticData
 import net.rwhps.server.game.manage.HeadlessModuleManage
 import net.rwhps.server.game.room.RelayRoom
 import net.rwhps.server.io.GameOutputStream
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.net.NetService
 import net.rwhps.server.net.core.IRwHps.NetType.*
 import net.rwhps.server.net.core.server.AbstractNetConnect
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.game.command.CommandHandler
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -84,7 +84,7 @@ class CommandsEx(handler: CommandHandler) {
                     out.writeString("RoomNoStartSize")
                     out.writeInt(RelayRoom.roomNoStartSize)
                 }
-                NullProtocol, DedicatedToTheBackend -> {}
+                GlobalProtocol, DedicatedToTheBackend, NullProtocol -> {}
             }
             con.sendPacket(out.createPacket(PacketType.GET_SERVER_INFO))
         }

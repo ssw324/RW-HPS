@@ -9,8 +9,9 @@
 
 package net.rwhps.server.game.event.game
 
+import net.rwhps.server.game.event.core.AbstractEventImpl
+import net.rwhps.server.game.headless.core.AbstractGameModule
 import net.rwhps.server.game.player.PlayerHess
-import net.rwhps.server.game.event.core.AbstractEvent
 
 /**
  * 玩家被解Ban IP时事件
@@ -18,4 +19,7 @@ import net.rwhps.server.game.event.core.AbstractEvent
  * @date 2023/7/5 13:47
  * @author Dr (dr@der.kim)
  */
-class PlayerIpUnBanEvent(val player: PlayerHess): AbstractEvent
+class PlayerIpUnBanEvent(
+    override val gameModule: AbstractGameModule,
+    val player: PlayerHess
+): AbstractEventImpl

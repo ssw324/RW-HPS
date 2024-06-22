@@ -108,9 +108,9 @@ class ConnectionAgreement {
     internal constructor(ignore: Boolean) {
         objectOutStream = ""
         udpDataOutputStream = null
-        useAgreement = "Headless"
+        useAgreement = "Headless-$ignore"
         isClosed = { false }
-        closeClean = {  }
+        closeClean = { }
 
         ip = "127.0.0.1"
         ipLong24 = IpUtils.ipToLong24(ip, false)

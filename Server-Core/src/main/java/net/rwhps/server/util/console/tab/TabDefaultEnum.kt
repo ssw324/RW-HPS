@@ -22,7 +22,8 @@ enum class TabDefaultEnum(
 ) {
     PlayerPosition(PlayerPositionCompletion(onlyAi = false, onlyPlayer = false)),
     PlayerPositionAI(PlayerPositionCompletion(onlyAi = true, onlyPlayer = false)),
-    PlayerPositionNoAI(PlayerPositionCompletion(onlyAi = false, onlyPlayer = true));
+    PlayerPositionNoAI(PlayerPositionCompletion(onlyAi = false, onlyPlayer = true)),
+    BanList(BanListCompletion());
 
     companion object {
         fun from(name: String): TabDefaultEnum? = EnumUtils.from(entries, name)

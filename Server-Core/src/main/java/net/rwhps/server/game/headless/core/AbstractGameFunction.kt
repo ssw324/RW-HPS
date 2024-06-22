@@ -10,7 +10,7 @@
 package net.rwhps.server.game.headless.core
 
 /**
- *
+ * 游戏函数扩展
  *
  * @date 2023/12/22 17:12
  * @author Dr (dr@der.kim)

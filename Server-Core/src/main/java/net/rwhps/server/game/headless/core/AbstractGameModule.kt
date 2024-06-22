@@ -10,15 +10,19 @@
 package net.rwhps.server.game.headless.core
 
 import net.rwhps.server.game.event.EventManage
-import net.rwhps.server.game.headless.core.link.AbstractLinkGameServerData
 import net.rwhps.server.game.headless.core.link.AbstractLinkGameFunction
 import net.rwhps.server.game.headless.core.link.AbstractLinkGameNet
+import net.rwhps.server.game.headless.core.link.AbstractLinkGameServerData
 import net.rwhps.server.game.headless.core.scripts.AbstractScriptMultiPlayer
 import net.rwhps.server.game.headless.core.scripts.AbstractScriptRoot
 import net.rwhps.server.game.room.ServerRoom
 
 /**
  * 通过这里的稳定接口来调用游戏内部实现
+ *
+ * 实现 服务器调用不同加载器的Headless, 这里作为中间兼容层
+ *
+ * 禁止耦合, Headless实现不应该依赖内部代码
  *
  * @property useClassLoader 获取加载接口实现类的 [ClassLoader]]
  * @property eventManage EventManage
@@ -34,6 +38,8 @@ interface AbstractGameModule {
     val useClassLoader: ClassLoader
 
     val eventManage: EventManage
+
+    val gameData: AbstractGameData
 
     val gameFast: AbstractGameFast
     val gameHessData: AbstractGameHessData

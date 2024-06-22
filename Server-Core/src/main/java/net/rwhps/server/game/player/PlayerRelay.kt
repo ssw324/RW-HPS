@@ -56,7 +56,7 @@ class PlayerRelay(
         private set
 
     /** Mute expiration time */
-    var mute = false
+    var mute = 0
 
     var lastSentMessage: String = ""
         set(value) {

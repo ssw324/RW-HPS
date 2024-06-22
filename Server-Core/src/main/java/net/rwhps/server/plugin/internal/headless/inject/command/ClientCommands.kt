@@ -182,7 +182,7 @@ internal class ClientCommands(handler: CommandHandler) {
 
             gameModule.gameScriptMultiPlayer.multiplayerStart()
 
-            GameEngine.data.eventManage.fire(ServerGameStartEvent())
+            GameEngine.data.eventManage.fire(ServerGameStartEvent(gameModule))
         }
         handler.register("kick", "<$PlayerPosition>", "clientCommands.kick") { args: Array<String>, player: PlayerHess ->
             if (room.isStartGame) {
@@ -324,6 +324,7 @@ internal class ClientCommands(handler: CommandHandler) {
         handler.register("map", "<MapNumber...>", "clientCommands.map") { args: Array<String>, player: PlayerHess ->
             if (isAdmin(player)) {
                 if (room.isStartGame) {
+                    player.sendSystemMessage(player.getinput("err.startGame"))
                     return@register
                 }
                 val response = StringBuilder(args[0])
@@ -352,6 +353,7 @@ internal class ClientCommands(handler: CommandHandler) {
                     room.maps.mapType = GameMaps.MapType.DefaultMap
                 } else {
                     if (MapManage.mapsData.size == 0) {
+                        player.sendSystemMessage(localeUtil.getinput("map.no"))
                         return@register
                     }
                     if (notIsNumeric(inputMapName)) {

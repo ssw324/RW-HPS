@@ -17,7 +17,7 @@ jar:com.lmax:disruptor:3.4.4:null
 jar:com.google.code.gson:gson:2.10.1:null
 jar:org.json:json:20231013:null
 jar:com.vdurmont:emoji-java:5.1.1:null
-jar:org.apache.commons:commons-compress:1.25.0:null
+jar:org.apache.commons:commons-compress:1.26.1:null
 jar:org.tukaani:xz:1.9:null
 jar:com.squareup.okhttp3:okhttp:4.12.0:null
 jar:org.lionsoul:ip2region:1.7.2:null
@@ -29,5 +29,8 @@ jar:it.unimi.dsi:fastutil-core:8.5.12:null
 jar:org.jetbrains:annotations:23.0.0:null
 jar:io.netty:netty-resolver:4.1.106.Final:null
 jar:io.netty:netty-common:4.1.106.Final:null
+jar:commons-codec:commons-codec:1.16.1:null
+jar:commons-io:commons-io:2.15.1:null
+jar:org.apache.commons:commons-lang3:3.14.0:null
 jar:org.jline:jline-native:3.25.1:null
 jar:com.squareup.okio:okio-jvm:3.6.0:null

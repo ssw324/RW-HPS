@@ -30,6 +30,7 @@ import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.io.packet.GameCommandOnePacket
 import net.rwhps.server.io.packet.Packet
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.net.core.DataPermissionStatus.ServerStatus
 import net.rwhps.server.net.core.server.AbstractNetConnect
 import net.rwhps.server.net.core.server.AbstractNetConnectData
@@ -39,14 +40,12 @@ import net.rwhps.server.net.netconnectprotocol.internal.relay.relayServerTypeRep
 import net.rwhps.server.net.netconnectprotocol.internal.server.playerExitInternalPacket
 import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine
 import net.rwhps.server.plugin.internal.headless.inject.lib.PlayerConnectX
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.annotations.MainProtocolImplementation
 import net.rwhps.server.util.game.command.CommandHandler
 import net.rwhps.server.util.log.ColorCodes
 import net.rwhps.server.util.log.Log
 import java.io.IOException
 import kotlin.math.min
-import com.corrodinggames.rts.gameFramework.j.k as GameNetInputStream
 
 /**
  * Common server implementation
@@ -161,16 +160,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
             // unknown
             out.writeBoolean(false)
 
-            val commandPacket = GameEngine.gameEngine.cf.b()
-            val out0 = GameOutputStream()
-            out0.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
-                writeBytes(out.getByteArray())
-            })
-
-            commandPacket.a(GameNetInputStream(playerConnectX.netEnginePackaging.transformHessPacket(out0.createPacket(PacketType.TICK))))
-
-            commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-            GameEngine.gameEngine.cf.b.add(commandPacket)
+            GameEngine.data.gameData.commandPacketList.add(out.getByteArray())
             //Call.sendSystemMessage(Data.i18NBundle.getinput("player.surrender", player.name))
         } catch (ignored: Exception) {
         }
@@ -226,7 +216,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                     return
                 }
                 val messageOut = Data.core.admin.filterMessage(player, message) ?:return
-                GameEngine.data.eventManage.fire(PlayerChatEvent(player, messageOut))
+                GameEngine.data.eventManage.fire(PlayerChatEvent(GameEngine.data, player, messageOut))
             } else if (response.type != CommandHandler.ResponseType.valid) {
                 when (response.type) {
                     CommandHandler.ResponseType.manyArguments -> {
@@ -258,7 +248,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                             packet.status = Control.EventNext.STOPPED
                             return
                         } else {
-                            PlayerOperationUnitEvent(player, it.gameCommandActions, it.unitName, it.x, it.y).let { event ->
+                            PlayerOperationUnitEvent(GameEngine.data, player, it.gameCommandActions, it.unitName, it.x, it.y).let { event ->
                                 GameEngine.data.eventManage.fire(event).await()
                                 if (!event.resultStatus) {
                                     packet.status = Control.EventNext.STOPPED
@@ -279,7 +269,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
                 }
 
                 if (!command.actionIdData.actionId.startsWith("_")) {
-                    PlayerOperationFactoryBuildUnitEvent(player, command.actionIdData).let { event->
+                    PlayerOperationFactoryBuildUnitEvent(GameEngine.data, player, command.actionIdData).let { event->
                         GameEngine.data.eventManage.fire(event).await()
                         if (!event.resultStatus) {
                             packet.status = Control.EventNext.STOPPED
@@ -314,17 +304,18 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
 
     override fun gameSummon(unit: String, x: Float, y: Float) {
         try {
-            val commandPacket = GameEngine.gameEngine.cf.b()
-
-            val out = GameOutputStream()
-            out.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
-                writeBytes(NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(player.index, unit, x, y).bytes)
-            })
-
-            commandPacket.a(GameNetInputStream(playerConnectX.netEnginePackaging.transformHessPacket(out.createPacket(PacketType.TICK))))
-
-            commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-            GameEngine.gameEngine.cf.b.add(commandPacket)
+//            val commandPacket = GameEngine.gameEngine.cf.b()
+//
+//            val out = GameOutputStream()
+//            out.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
+//                writeBytes(NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(player.index, unit, x, y).bytes)
+//            })
+//
+//            commandPacket.a(GameNetInputStream(playerConnectX.netEnginePackaging.transformHessPacket(out.createPacket(PacketType.TICK))))
+//
+//            commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
+//            GameEngine.gameEngine.cf.b.add(commandPacket)
+            GameEngine.data.gameData.commandPacketList.add(NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(player.index, unit, x, y).bytes)
         } catch (e: Exception) {
             Log.error(e)
         }
@@ -369,7 +360,7 @@ open class GameVersionServer(val playerConnectX: PlayerConnectX): AbstractNetCon
             if (!playerConnectX.room.isStartGame) {
                 playerConnectX.room.playerManage.playerAll.remove(player)
             }
-            GameEngine.data.eventManage.fire(PlayerLeaveEvent(player)).await()
+            GameEngine.data.eventManage.fire(PlayerLeaveEvent(GameEngine.data, player)).await()
 
             if (Data.neverEnd && player.never) {
                 synchronized(am.bE) {

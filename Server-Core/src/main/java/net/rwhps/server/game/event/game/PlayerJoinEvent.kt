@@ -9,8 +9,9 @@
 
 package net.rwhps.server.game.event.game
 
+import net.rwhps.server.game.event.core.AbstractEventImpl
+import net.rwhps.server.game.headless.core.AbstractGameModule
 import net.rwhps.server.game.player.PlayerHess
-import net.rwhps.server.game.event.core.AbstractEvent
 import net.rwhps.server.util.annotations.core.EventOnlyRead
 
 /**
@@ -20,4 +21,7 @@ import net.rwhps.server.util.annotations.core.EventOnlyRead
  * @author Dr (dr@der.kim)
  */
 @EventOnlyRead
-class PlayerJoinEvent(val player: PlayerHess): AbstractEvent
+class PlayerJoinEvent(
+    override val gameModule: AbstractGameModule,
+    val player: PlayerHess
+): AbstractEventImpl

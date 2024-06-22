@@ -9,7 +9,7 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 
 /**
  *
@@ -17,4 +17,4 @@ import net.rwhps.server.game.event.core.AbstractGlobalEvent
  * @date 2023/10/8 16:09
  * @author Dr (dr@der.kim)
  */
-class TestBGlobalEvent : AbstractGlobalEvent
+class TestBGlobalEvent : AbstractGlobalEventImpl

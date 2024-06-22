@@ -34,7 +34,7 @@ import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.struct.map.IntMap
 import net.rwhps.server.struct.map.ObjectMap
 import net.rwhps.server.struct.map.OrderedMap
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.util.compression.core.AbstractDecoder
 import net.rwhps.server.util.file.FakeFileSystem
 import net.rwhps.server.util.file.FileUtils

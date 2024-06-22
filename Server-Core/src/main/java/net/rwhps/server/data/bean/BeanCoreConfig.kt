@@ -63,16 +63,25 @@ data class BeanCoreConfig(
     /** Default mods configuration for single user relay */
     val singleUserRelayMod: Boolean = false,
 
+    /** 混合协议监听, 会使用 [BeanCoreConfig.port] 作为HTTP/HTTPS/R-Con/Game, 支持SSL */
+    val mixProtocolEnable: Boolean = false,
+    val rconMixEnable: Boolean = false,
+    val webMixEnable: Boolean = false,
+
+    val rconPort: Int = 0,
+    val rconPasswd: String = RandomUtils.getRandomIetterString(10),
+
+    /** Web的 Port, 不为 0 时在对应端口启用一个HTTP服务 */
+    val webPort: Int = 0,
     /** Test : HTTP 鉴权 */
     val webToken: String = RandomUtils.getRandomIetterString(10),
     /** Web HOST 限制 */
     val webHOST: String = "",
-
-    /** 混合协议监听, 会使用 [BeanCoreConfig.port] 作为HTTP, 支持SSL */
-    val mixPort: Boolean = false,
-    /** Web的 Port, 不为 0 时启用对应服务 */
-    val webPort: Int = 0,
-    val ssl: Boolean = false,
+    /** 启用SSL支持(需要使用jks) */
+    val sslEnable: Boolean = false,
+    /** 混合协议, 允许在启用SSL的情况下, 同端口服务HTTP */
+    val sslMixEnable: Boolean = false,
+    /** SSL密码 */
     val sslPasswd: String = "RW-HPS",
 
     var runPid: Long = 0

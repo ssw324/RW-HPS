@@ -16,7 +16,7 @@ import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.packet.Packet
 import net.rwhps.server.net.GroupNet
 import net.rwhps.server.net.core.ConnectionAgreement
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.util.Time
 import net.rwhps.server.util.log.Log
 import java.io.IOException

@@ -9,11 +9,13 @@
 
 package net.rwhps.server.io.packet
 
+import net.rwhps.server.data.global.NetStaticData
 import net.rwhps.server.func.Control
 import net.rwhps.server.io.GameInputStream
 import net.rwhps.server.io.GameOutputStream
+import net.rwhps.server.io.packet.type.AbstractPacketType
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.struct.SerializerTypeAll
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.inline.toStringHex
 import net.rwhps.server.util.log.Log
 import java.io.IOException
@@ -26,19 +28,19 @@ import java.io.IOException
  * @author Dr (dr@der.kim)
  */
 class Packet {
-    val type: PacketType
+    val type: AbstractPacketType
     val bytes: ByteArray
 
     /** 决定这个包是否向下继续传递 */
     var status = Control.EventNext.CONTINUE
 
     constructor(type0: Int, bytes: ByteArray) {
-        this.type = PacketType.from(type0)
+        this.type = NetStaticData.RwHps.packetType.from(type0)
         this.bytes = bytes
         check(type0)
     }
 
-    constructor(type0: PacketType, bytes: ByteArray) {
+    constructor(type0: AbstractPacketType, bytes: ByteArray) {
         this.type = type0
         this.bytes = bytes
     }
@@ -50,8 +52,8 @@ class Packet {
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other is PacketType) {
-            return other.name == type.name && other.typeInt == type.typeInt
+        if (other is AbstractPacketType) {
+            return other.typeInt == type.typeInt
         }
         return false
     }

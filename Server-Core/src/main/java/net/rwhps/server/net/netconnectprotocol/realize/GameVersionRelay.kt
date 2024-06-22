@@ -20,18 +20,19 @@ import net.rwhps.server.io.GameInputStream
 import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.io.packet.Packet
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.net.core.ConnectionAgreement
 import net.rwhps.server.net.core.DataPermissionStatus.RelayStatus
 import net.rwhps.server.net.core.server.AbstractNetConnect
 import net.rwhps.server.net.core.server.AbstractNetConnectData
 import net.rwhps.server.net.core.server.AbstractNetConnectRelay
 import net.rwhps.server.net.netconnectprotocol.UniversalAnalysisOfGamePackages
+import net.rwhps.server.net.netconnectprotocol.internal.relay.fromRelayJumpsToAnotherServerInternalPacket
 import net.rwhps.server.net.netconnectprotocol.internal.relay.relayServerInitInfoInternalPacket
 import net.rwhps.server.net.netconnectprotocol.internal.relay.relayServerTypeInternal
 import net.rwhps.server.net.netconnectprotocol.internal.relay.relayServerTypeReplyInternalPacket
 import net.rwhps.server.net.netconnectprotocol.internal.server.chatUserMessagePacketInternal
 import net.rwhps.server.util.IsUtils
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.Time
 import net.rwhps.server.util.algorithms.NetConnectProofOfWork
 import net.rwhps.server.util.annotations.MainProtocolImplementation
@@ -43,6 +44,7 @@ import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.log.Log.debug
 import net.rwhps.server.util.log.Log.error
 import java.io.IOException
+import java.net.InetAddress
 import java.util.*
 
 /**
@@ -111,6 +113,8 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
     protected var replacePlayerHex = ""
 
     private var startGameFlag = true
+    private val joinTime = Time.concurrentSecond()
+    private var joinMessage = true
 
     override fun setCachePacket(packet: Packet) {
         cachePacket = packet
@@ -261,18 +265,6 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
                 return
             }
 
-            if (message.length > 20 && (message.contains("妈") || message.contains("媽") || message.contains("🐎") || message.contains(
-                        "草"
-                ) || message.contains("操"))) {
-                if (playerRelay!!.lastSentMessage == message || !playerRelay!!.lastMessageCount.checkStatus()) {
-                    kick("[CHAT] CODE: 1 ")
-                    relayRoom!!.relayKickData["KICK${connectionAgreement.ipLong24}"] = Int.MAX_VALUE
-                } else {
-                    playerRelay!!.lastMessageCount.count++
-                }
-                block = true
-            }
-
             playerRelay!!.lastSentMessage = message
 
             if (block) {
@@ -306,7 +298,9 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
         }
     }
 
+    @Throws(IOException::class)
     override fun receiveCommand(packet: Packet) {
+        sendPackageToHOST(packet)
     }
 
     override fun sendRelayServerId(multicast: Boolean) {
@@ -364,7 +358,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
                 """
                     {{RELAY-CN}} Room ID : ${Data.configRelay.mainID + relayRoom!!.id}
                     你的房间是 <${if (public) "开放" else "隐藏"}> 在列表
-                    RELAY-CN #2 锐意制作中 !
+                    This Server Use RW-HPS Project (Test)
                 """.trimIndent()
                 )
                 // useMulticast
@@ -795,7 +789,14 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
         }
 
 
-        if ("R".equals(id[0].toString(), ignoreCase = true)) {
+        if (idDistribute(id)) {
+            if (Data.configRelay.mainServer) {
+                sendPacket(fromRelayJumpsToAnotherServerInternalPacket("${id[1]}.relay.rwhps.net/$id"))
+                return
+            } else {
+                id = id.substring(2)
+            }
+        } else if ("R".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
         }
 
@@ -829,7 +830,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
                 if (!checkLength(customId)) {
                     return
                 }
-                if (RelayRoom.getCheckRelay(customId)) {
+                if (RelayRoom.getCheckRelay(customId) || idDistribute("R$customId")) {
                     sendRelayServerType(Data.i18NBundle.getinput("relay.id.re"))
                     return
                 }
@@ -838,7 +839,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
                 if (!checkLength(customId)) {
                     return
                 }
-                if (RelayRoom.getCheckRelay(customId)) {
+                if (RelayRoom.getCheckRelay(customId) || idDistribute("R$customId")) {
                     sendRelayServerType(Data.i18NBundle.getinput("relay.id.re"))
                     return
                 }
@@ -927,6 +928,10 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
                 sendRelayServerType(Data.i18NBundle.getinput("relay.server.error", e.message))
             }
         }
+    }
+
+    private fun idDistribute(id: String): Boolean {
+        return false
     }
 
     private fun checkLength(str: String): Boolean {
@@ -1037,4 +1042,30 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement): AbstractN
         var income: Float = 1f,
     )
 
+    companion object {
+        private val urlMath = "\\b\\w+(?:\\.\\w+)+\\b".toPattern()
+        private fun findMapURL(mapName: String): Boolean {
+            val find = urlMath.matcher(mapName)
+            if (find.find()) {
+                try {
+                    var url = find.group()
+                    // 过滤1.1.1这种, 防误杀
+                    if (IsUtils.isNumeric(url.replace(".", ""))) {
+                        return false
+                    }
+                    if (url.startsWith(".")) {
+                        url = url.substring(1)
+                    }
+                    url = url.removeSuffix(".")
+                    // 直接查解析
+                    InetAddress.getAllByName(url)
+                    return true
+                } catch (_: Exception) {
+                    return false
+                }
+            } else {
+                return false
+            }
+        }
+    }
 }

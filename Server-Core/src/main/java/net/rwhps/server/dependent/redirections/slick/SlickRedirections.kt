@@ -31,14 +31,12 @@ import net.rwhps.server.util.inline.toClass
 class SlickRedirections: MainRedirections {
     override fun register() {
         addAllReplace("org/newdawn/slick/opengl/renderer/VBORenderer")
-        addAllReplace("org/newdawn/slick/AngelCodeFont")
-        // 干掉渲染引擎
-        addAllReplace("org/newdawn/slick/Graphics")
 
+        redirectR(MethodTypeInfoValue("org/newdawn/slick/opengl/TextureImpl", "getTextureHeight", "()I"), BasicDataRedirections.INT)
+        redirectR(MethodTypeInfoValue("org/newdawn/slick/opengl/TextureImpl", "getTextureWidth", "()I"), BasicDataRedirections.INT)
 
         redirectR(MethodTypeInfoValue("org/newdawn/slick/Input","poll", "(II)V"), BasicDataRedirections.NULL)
         redirectR(MethodTypeInfoValue("org/newdawn/slick/Music","poll", "(I)V"), BasicDataRedirections.NULL)
-
 
         // Remove game mouse cursor
         redirectR(MethodTypeInfoValue("org/newdawn/slick/AppGameContainer", "setMouseCursor", "(Lorg/newdawn/slick/Image;II)V"), BasicDataRedirections.NULL)

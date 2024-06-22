@@ -10,7 +10,7 @@
 package net.rwhps.server.game.event.global
 
 import net.rwhps.server.func.Control
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.net.core.ConnectionAgreement
 import net.rwhps.server.util.annotations.core.EventOnlyRead
 import net.rwhps.server.util.concurrent.lock.Synchronize
@@ -22,7 +22,7 @@ import net.rwhps.server.util.concurrent.lock.Synchronize
  * @author Dr (dr@der.kim)
  */
 @EventOnlyRead
-class NetConnectNewEvent(val connectionAgreement: ConnectionAgreement): AbstractGlobalEvent {
+class NetConnectNewEvent(val connectionAgreement: ConnectionAgreement): AbstractGlobalEventImpl {
     var result by Synchronize(false)
 
     override fun status(): Control.EventNext {

@@ -13,6 +13,16 @@ import net.rwhps.server.game.event.game.ServerGameOverEvent.GameOverData
 import net.rwhps.server.net.core.server.AbstractNetConnectServer
 import net.rwhps.server.util.annotations.mark.GameSimulationLayer
 
+/**
+ * 链接无头端的数据
+ *
+ * @property tickHess 无头的刻度 (本地)
+ * @property tickNetHess 无头的刻度 (网络)
+ * @property gameDelta 游戏上一帧的处理时间
+ * @property gameFPS 游戏帧率
+ *
+ * @author Dr (dr@der.kim)
+ */
 interface AbstractGameHessData {
     @GameSimulationLayer.GameSimulationLayer_KeyWords("got remoteSyncFrame for")
     val tickHess: Int
@@ -39,10 +49,23 @@ interface AbstractGameHessData {
     @GameSimulationLayer.GameSimulationLayer_KeyWords("is victorious!")
     fun getGameOverData(): GameOverData?
 
+    /**
+     * 获取玩家出生坐标
+     */
     @GameSimulationLayer.GameSimulationLayer_KeyWords("aiDifficulty is locked")
     fun getPlayerBirthPointXY()
 
+    /**
+     * 获取指定位置有无玩家
+     *
+     * @param position
+     * @return 是否存在
+     */
     fun existPlayer(position: Int): Boolean
 
+    /**
+     * 获取 Headless 中的 AI 数据绑定
+     * @return AbstractNetConnectServer
+     */
     fun getHeadlessAIServer(): AbstractNetConnectServer
 }

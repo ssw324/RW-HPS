@@ -10,8 +10,8 @@
 package net.rwhps.server.util.compression
 
 import net.rwhps.server.util.compression.core.AbstractDecoder
-import net.rwhps.server.util.compression.seven.SevenZipFileDecoder
-import net.rwhps.server.util.compression.zip.ZipFileDecoder
+import net.rwhps.server.util.compression.decoder.SevenZipDecoder
+import net.rwhps.server.util.compression.decoder.ZipDecoder
 import net.rwhps.server.util.io.IoRead
 import java.io.File
 import java.io.InputStream
@@ -25,11 +25,11 @@ import java.io.InputStream
  */
 object CompressionDecoderUtils {
 
-    fun zip(file: File): AbstractDecoder = ZipFileDecoder(file)
-    fun zip(bytes: ByteArray): AbstractDecoder = ZipFileDecoder(bytes)
-    fun zipAllReadStream(inStream: InputStream): AbstractDecoder = ZipFileDecoder(IoRead.readInputStreamBytes(inStream))
+    fun zip(file: File): AbstractDecoder = ZipDecoder(file)
+    fun zip(bytes: ByteArray): AbstractDecoder = ZipDecoder(bytes)
+    fun zipAllReadStream(inStream: InputStream): AbstractDecoder = ZipDecoder(IoRead.readInputStreamBytes(inStream))
 
-    fun sevenZip(file: File): AbstractDecoder = SevenZipFileDecoder(file)
-    fun sevenZip(bytes: ByteArray): AbstractDecoder = SevenZipFileDecoder(bytes)
+    fun sevenZip(file: File): AbstractDecoder = SevenZipDecoder(file)
+    fun sevenZip(bytes: ByteArray): AbstractDecoder = SevenZipDecoder(bytes)
     fun sevenAllReadStream(inStream: InputStream): AbstractDecoder = sevenZip(IoRead.readInputStreamBytes(inStream))
 }

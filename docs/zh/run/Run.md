@@ -4,26 +4,46 @@
 
 ### 1.JVM 环境要求
 
-- JVM：最低版本： <font style="color:red;font-weight:bold">~~Java 8(因为HPS架构升级，现已不再可用)~~</font> JDK11   
-  优先建议您通过JDK11进行使用,但也可以使用JRE。一切由你自己的喜好来使用。
+- JVM：最低版本： <font style="color:red;font-weight:bold">~~Java 8(因为HPS架构升级，现已不再可用)~~</font> JDK21
 
 ### 2.如何获取JDK?
 
-> 您需要下载 JDK 11以获得：
-> - 1.手动下载安装如 [AdoptOpenJDK](https://adoptopenjdk.net/)
-    或者 [OracleJDK](https://www.oracle.com/java/technologies/javase-downloads.html)
-> - 2.也可以通过此直链获取：[Download JDK11](http://xz.w10a.com/Small/jdksy.rar)(直链可能随时会失效!)
-> - 3.蓝奏云获取:[JDK11--蓝奏云](https://lingasdj.lanzouv.com/b05rqansf)
-> - 4.环境变量配置:[JDK-环境变量](https://www.runoob.com/w3cnote/windows10-java-setup.html)
+> 您需要下载 JDK21以获得：
+- 1.**Windows** 下载 JDK21 : </br> [ORACLE JDK21 Windows x64 Installer](https://download.oracle.com/java/21/archive/jdk-21.0.2_windows-x64_bin.exe)
+- 2.对于**Debian的发行版系统** </br> 
+Debian deb包 : </br> [ORACLE JDK21 x64 Debian Package](https://download.oracle.com/java/21/archive/jdk-21.0.2_linux-x64_bin.deb) </br> 或是通过软件源安装 </br>
+```
+sudo apt-get update -y #更新软件源
+sudo apt-get install openjdk-21-jdk -y #安装JDK21
+```
+- 3.不建议使用**CentOS**运行， CentOS项目已于2021年12月31日停止，不再有官方支持。
 
-# B.Windows运行方案:
 
-## 运行方法
+# B.运行方案
 
-在你喜欢的目录下使用 ~~**Cmd**~~(不推荐) 或者 **PowerShell** (Windows 系统按住Shift+鼠标右键，点击"在此处打开 PowerShell") 或 **Terminal(
-推荐)** 运行jar  
-使用的指令：
+## 下载编译好的服务端
 
+通过 [Release](https://github.com/RW-HPS/RW-HPS/releases) 下载
+
+### Windows 运行方法
+
+- 1.把下载好的**服务端**(**Server-All.jar**)存放到你喜欢的，能被你自己找到的任意文件夹。
+- 2.有存放服务端的文件夹里右键鼠标，点击**在终端中打开**
+- 3.键入以下指令:
+```bash
+java -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -jar Server.jar
+# TODO:如果乱码或者无法执行，请使用下面的指令。
+java -jar Server.jar
+```
+- 4.对于懒惰每次启动都要打开终端的人类，建议在存放服务端的根目录创建一个后缀为.bat的start.bat文件，在文件里写入上面的其中一条指令，过后每次启动只需要点击该文件就好了
+
+### Debian/Ubuntu运行方法
+- 1.通过 wget 下载最新版本的服务端
+```bash
+wget https://github.com/RW-HPS/RW-HPS/releases/download/3.0.0-M5/Server-All.jar
+```
+- 2.通过`mv Server_All.jar <目标文件夹>`移动服务端到你喜欢的文件夹里
+- 3.用和Windowss上一样的指令执行服务端：
 ```bash
 java -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8 -jar Server.jar
 # TODO:如果乱码或者无法执行，请使用下面的指令。
@@ -46,7 +66,7 @@ java -jar Server.jar
 
 <img src="../img/Question3.png"></img>
 
-#### 此问题分析：JDK版本低于11，本问题主要是 RW-HPS 使用 Java11 编译, 导致无法使用 Java8 运行。
+#### 此问题分析：JDK版本低于21，本问题主要是 RW-HPS 使用 Java11 编译, 导致无法使用 Java8 运行。
 
 <img src="../img/Question4.png"></img>
 
@@ -56,9 +76,9 @@ java -jar Server.jar
 java -version
 ```
 
-显示下方的图即代表你已经成功升级到JDK11:
+显示下方的图即代表你已经成功升级到JDK21:
 
-<img src="../img/Question5.png"></img>
+<img src="https://img.lu/upload/b1c58d5f11dee00543aee.png"></img>
 
 ### Q.3.:**Not D!!!**
 
@@ -79,49 +99,22 @@ java -D"file.encoding=UTF-8" -jar Server.jar
 #### 问题分析：如果您使用的 Linux, 那么是缺少 Font 依赖:
 
 #### 解决策略：手动安装 `fontconfig`
-
-**Centos** : ```yum install fontconfig```  
+  
 **Ubuntu** : ```apt-get install fontconfig```
 ---
-<br>
-
-# C.其他平台及方式的运行方案：
-
-## 1.使用我们在Github的编译好的版本
-
-1.在我们的 [Releases](https://github.com/RW-HPS/RW-HPS/releases) 下载版本
-
-## 2.Linux 平台
-
-**不建议无任何基础的用户在Linux使用**
-> 请注意 Linux需要保活 你可以使用Screen **参见文章最后**
-
-之后请直接在终端输入：
-
-```bash
-java -Djava.net.preferIPv4Stack=true -jar Server.jar
-```
-
 ## 3.手动编译最新的测试版本
 
 ### 我不知道Gradle如何使用请移步
 
 [Gradle教程](Gradle.md)
 
-1.需要安装Git Java11 Screen(或许可以使用你喜欢的保活方式)
+1.需要安装Git Java21 Screen(或许可以使用你喜欢的保活方式)
 
-### A.Centos使用
-
-```bash  
-sudo yum install git java11 screen -y
-```
-
-### B.Ubuntu使用
+### A.Ubuntu使用
 
 ```bash  
-sudo add-apt-repository ppa:linuxuprising/java
 sudo apt update
-sudo apt-get install git oracle-java11-installer screen -y  
+sudo apt-get install git openjdk-21-jdk screen -y  
 ```
 
 2.同步存储库
@@ -160,14 +153,8 @@ java -Djava.net.preferIPv4Stack=true -jar Server.jar
 
 ## 4.使用Screen
 
-1.需要安装Screen(或许可以使用你喜欢的保活方式)      
-Centos使用
-
-```bash  
-sudo yum install screen -y
-```
-
-Ubuntu使用
+- 1.需要安装Screen(或许可以使用你喜欢的保活方式)      
+### Ubuntu使用
 
 ```bash  
 sudo apt update

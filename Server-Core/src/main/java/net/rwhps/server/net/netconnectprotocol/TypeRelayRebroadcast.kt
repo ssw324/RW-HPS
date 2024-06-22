@@ -17,7 +17,7 @@ import net.rwhps.server.net.core.ConnectionAgreement
 import net.rwhps.server.net.core.TypeConnect
 import net.rwhps.server.net.netconnectprotocol.realize.GameVersionRelay
 import net.rwhps.server.net.netconnectprotocol.realize.GameVersionRelayRebroadcast
-import net.rwhps.server.util.PacketType.*
+import net.rwhps.server.io.packet.type.PacketType.*
 import net.rwhps.server.util.ReflectionUtils
 import net.rwhps.server.util.annotations.mark.PrivateMark
 import net.rwhps.server.util.game.command.CommandHandler

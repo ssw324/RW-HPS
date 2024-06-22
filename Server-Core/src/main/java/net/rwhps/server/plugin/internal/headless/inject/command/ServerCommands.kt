@@ -10,8 +10,6 @@
 package net.rwhps.server.plugin.internal.headless.inject.command
 
 import com.corrodinggames.rts.game.n
-import com.corrodinggames.rts.gameFramework.j.NetEnginePackaging
-import com.corrodinggames.rts.gameFramework.j.k
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.data.global.Data.LINE_SEPARATOR
 import net.rwhps.server.data.global.NetStaticData
@@ -21,20 +19,18 @@ import net.rwhps.server.game.manage.HeadlessModuleManage
 import net.rwhps.server.game.manage.MapManage
 import net.rwhps.server.game.manage.ModManage
 import net.rwhps.server.game.player.PlayerHess
-import net.rwhps.server.io.GameOutputStream
-import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine
 import net.rwhps.server.plugin.internal.headless.inject.util.TabCompleterProcess
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.util.Font16
 import net.rwhps.server.util.IsUtils
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.Time
 import net.rwhps.server.util.Time.getTimeFutureMillis
 import net.rwhps.server.util.console.tab.TabDefaultEnum.PlayerPosition
 import net.rwhps.server.util.console.tab.TabDefaultEnum.PlayerPositionNoAI
 import net.rwhps.server.util.game.command.CommandHandler
 import net.rwhps.server.util.log.Log.error
+import org.newdawn.slick.Graphics
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -109,7 +105,12 @@ internal class ServerCommands(handler: CommandHandler) {
         }
         handler.register("ban", "<$PlayerPositionNoAI>", "serverCommands.ban") { arg: Array<String>, log: StrCons ->
             TabCompleterProcess.playerPosition(arg[0], log)?.let { player ->
-                GameEngine.data.eventManage.fire(PlayerBanEvent(player))
+                GameEngine.data.eventManage.fire(PlayerBanEvent(gameModule, player))
+            }
+        }
+        handler.register("unban", "<$PlayerPositionNoAI>", "serverCommands.ban") { arg: Array<String>, log: StrCons ->
+            TabCompleterProcess.playerPosition(arg[0], log)?.let { player ->
+                GameEngine.data.eventManage.fire(PlayerBanEvent(gameModule, player))
             }
         }
         handler.register("mute", "<$PlayerPositionNoAI> [Time(s)]", "serverCommands.mute") { arg: Array<String>, log: StrCons ->
@@ -273,23 +274,11 @@ internal class ServerCommands(handler: CommandHandler) {
                             i++
                         }
                         if (b.toInt() == 1) {
-                            //Data.game.gameCommandCache.add(NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(index, arg[0], ((off+width)*20).toFloat(), (height*20).toFloat()))
                             try {
-                                val commandPacket = GameEngine.gameEngine.cf.b()
-
-                                val out = GameOutputStream()
-                                out.flushEncodeData(CompressOutputStream.getGzipOutputStream("c", false).apply {
-                                    writeBytes(
-                                            NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(
-                                                    index, arg[0], ((off + width) * 20).toFloat(), (height * 20).toFloat()
-                                            ).bytes
-                                    )
-                                })
-
-                                commandPacket.a(k(NetEnginePackaging.transformHessPacketNullSource(out.createPacket(PacketType.TICK))))
-
-                                commandPacket.c = GameEngine.data.gameHessData.tickNetHess + 10
-                                GameEngine.gameEngine.cf.b.add(commandPacket)
+                                GameEngine.data.gameData.commandPacketList.add(
+                                        NetStaticData.RwHps.abstractNetPacket.gameSummonPacket(
+                                        index, arg[0], ((off + width) * 20).toFloat(), (height * 20).toFloat()
+                                ).bytes)
                             } catch (e: Exception) {
                                 error(e)
                             }
@@ -302,10 +291,10 @@ internal class ServerCommands(handler: CommandHandler) {
             }
         }
 
-//        handler.register("test", "serverCommands.addmoney") { arg: Array<String>, log: StrCons ->
-//            // 截图
-//            GameEngine.mainObject.j!!.a(null as Graphics?, true)
-//        }
+        handler.register("test", "serverCommands.addmoney") { _: Array<String>, _: StrCons ->
+            // 截图
+            GameEngine.mainObject.j!!.a(null as Graphics?, true)
+        }
     }
 
     companion object {

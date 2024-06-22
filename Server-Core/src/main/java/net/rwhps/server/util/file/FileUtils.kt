@@ -11,8 +11,8 @@ package net.rwhps.server.util.file
 
 import net.rwhps.server.core.Core
 import net.rwhps.server.data.global.Data
-import net.rwhps.server.struct.map.OrderedMap
 import net.rwhps.server.struct.list.Seq
+import net.rwhps.server.struct.map.OrderedMap
 import net.rwhps.server.util.IsUtils
 import net.rwhps.server.util.SystemUtils
 import net.rwhps.server.util.algorithms.digest.DigestUtils
@@ -26,6 +26,7 @@ import net.rwhps.server.util.io.IoReadConversion.fileToStream
 import net.rwhps.server.util.log.Log.error
 import java.io.*
 import java.net.URLDecoder.decode
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
 
@@ -334,19 +335,19 @@ open class FileUtils {
          * 默认的地址前缀
          * 如果不为null将会直接使用path而不是使用jar的位置
          */
-        private var defaultFilePath: String = ""
+        private var defaultFilePath: String = initPath()
 
         /**
          * 加载默认的文件路径
          * 默认使用Jar同目录下的 与启动的位置无关
          */
-        init {
-            val path = this::class.java.protectionDomain.codeSource.location.path
+        private fun initPath(): String {
+            val path = FileUtils::class.java.protectionDomain.codeSource.location.path
             val pathSplit = path.split("/").toTypedArray()
             val jarName = pathSplit[pathSplit.size - 1]
             val jarPath = path.replace(jarName, "")
 
-            setFilePath(decode(jarPath, Data.UTF_8))
+            return pathProcess(decode(jarPath, StandardCharsets.UTF_8))
         }
 
         /**
@@ -354,22 +355,8 @@ open class FileUtils {
          * @param customFilePath String
          */
         @JvmStatic
-        fun setFilePath(customFilePathIn: String? = null) {
-            if (customFilePathIn != null) {
-                var cache = customFilePathIn
-                // Windows 不允许文件夹存在 :
-                // 同时 获取的位置前面会有 /
-                // 例如 /A:/a/a.jar
-                if (SystemUtils.isWindows && cache.contains(":")) {
-                    cache = cache.substring(1)
-                }
-                val customFilePath = cache.replace("\\", "/")
-                defaultFilePath = if (customFilePath.endsWith("/")) {
-                    customFilePath
-                } else {
-                    "$customFilePath/"
-                }
-            }
+        fun setFilePath(customFilePathIn: String) {
+            defaultFilePath = pathProcess(customFilePathIn)
         }
 
         /**
@@ -440,6 +427,22 @@ open class FileUtils {
         @JvmStatic
         fun getMyCoreJarStream(): InputStream {
             return FileUtils(getMyFilePath()).getInputsStream()
+        }
+
+        private fun pathProcess(path: String): String {
+            var cache = path
+            // Windows 不允许文件夹存在 :
+            // 同时 获取的位置前面会有 /
+            // 例如 /A:/a/a.jar
+            if (SystemUtils.isWindows && cache.contains(":")) {
+                cache = cache.substring(1)
+            }
+            val customFilePath = cache.replace("\\", "/")
+            return if (customFilePath.endsWith("/")) {
+                customFilePath
+            } else {
+                "$customFilePath/"
+            }
         }
 
         private fun cehckFolderPath(defPath: String, path: String): String {

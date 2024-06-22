@@ -84,19 +84,25 @@ internal class RelayClientCommands(handler: CommandHandler) {
         }
 
         handler.register("am", "<on/off>", "#混战") { args: Array<String>, con: GameVersionRelay ->
-            con.relayRoom!!.battleRoyalLock = "on" == args[0]
-            if (con.relayRoom!!.battleRoyalLock) {
-                con.relayRoom!!.abstractNetConnectIntMap.forEach {
-                    if (it.value.playerRelay != null) {
-                        it.value.sendPackageToHOST(chatUserMessagePacketInternal("-qc -self_team ${it.value.playerRelay!!.site + 1}"))
+            if (isAdmin(con)) {
+                con.relayRoom!!.battleRoyalLock = "on" == args[0]
+                if (con.relayRoom!!.battleRoyalLock) {
+                    con.relayRoom!!.abstractNetConnectIntMap.forEach {
+                        if (it.value.playerRelay != null) {
+                            it.value.sendPackageToHOST(chatUserMessagePacketInternal("-qc -self_team ${it.value.playerRelay!!.site + 1}"))
+                        }
                     }
                 }
+                sendMsg(con, localeUtil.getinput("server.amTeam", if (con.relayRoom!!.battleRoyalLock) "开启" else "关闭"))
             }
-            sendMsg(con, localeUtil.getinput("server.amTeam", if (con.relayRoom!!.battleRoyalLock) "开启" else "关闭"))
         }
 
         handler.register("kickx", "<Name/Position>", "#Kick Player") { args: Array<String>, con: GameVersionRelay ->
             if (isAdmin(con)) {
+                if (con.relayRoom!!.isStartGame && (con.relayRoom!!.startGameTime + 300) < Time.concurrentSecond()) {
+                    sendMsg(con,"已经开局十分钟了 不能再BAN")
+                    return@register
+                }
                 val conTg: GameVersionRelay? = findPlayer(con, args[0])
                 conTg?.let {
                     con.relayRoom!!.relayKickData["KICK" + it.playerRelay!!.uuid] = Time.concurrentSecond() + 60
@@ -109,10 +115,10 @@ internal class RelayClientCommands(handler: CommandHandler) {
 
         handler.register("ban", "<Name/Position>", "#Ban Player") { args: Array<String>, con: GameVersionRelay ->
             if (isAdmin(con)) {
-//                if (con.relay!!.isStartGame && con.relay!!.startGameTime < Time.concurrentSecond()) {
-//                    sendMsg(con,"已经开局五分钟了 不能再踢出")
-//                    return@register
-//                }
+                if (con.relayRoom!!.isStartGame && con.relayRoom!!.startGameTime < Time.concurrentSecond()) {
+                    sendMsg(con,"已经开局五分钟了 不能再BAN")
+                    return@register
+                }
                 val conTg: GameVersionRelay? = findPlayer(con, args[0])
                 conTg?.let {
                     con.relayRoom!!.relayKickData["KICK" + it.playerRelay!!.uuid] = Int.MAX_VALUE

@@ -45,5 +45,9 @@ class GameHeadlessEventGlobal: EventListenerHost {
         }
         HeadlessModuleManage.hps.gameLinkNet.startHeadlessServer(Data.config.port, passwd)
         Log.clog(Data.i18NBundle.getinput("server.headless.run", serverHessLoadEvent.loadID))
+
+        if (Data.config.autoUpList) {
+            Data.SERVER_COMMAND.handleMessage("uplist add", Data.defPrint)
+        }
     }
 }

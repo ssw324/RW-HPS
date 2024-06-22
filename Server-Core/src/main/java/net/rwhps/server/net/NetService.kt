@@ -24,7 +24,7 @@ import net.rwhps.server.net.core.AbstractNet
 import net.rwhps.server.net.core.web.AbstractNetWeb
 import net.rwhps.server.net.handler.tcp.StartGameNetTcp
 import net.rwhps.server.net.handler.tcp.StartHttp
-import net.rwhps.server.net.handler.tcp.StartMixTLSAndGame
+import net.rwhps.server.net.handler.tcp.StartMixProtocol
 import net.rwhps.server.net.http.WebData
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.util.ReflectionUtils
@@ -59,10 +59,10 @@ class NetService {
     )
 
     @JvmOverloads
-    constructor(id: String, abstractNet: AbstractNet = StartGameNetTcp()) {
+    constructor(id: String, abstractNet: AbstractNet = if (Data.config.mixProtocolEnable) StartMixProtocol() else StartGameNetTcp()) {
         this.netType = when (abstractNet) {
             is StartGameNetTcp -> NetTypeEnum.HeadlessNet
-            is StartMixTLSAndGame -> NetTypeEnum.MixTlsAndGame
+            is StartMixProtocol -> NetTypeEnum.MixTlsAndGame
             is StartHttp -> NetTypeEnum.HTTPNet
             is AbstractNetWeb -> NetTypeEnum.HTTPNet
             else -> NetTypeEnum.Other

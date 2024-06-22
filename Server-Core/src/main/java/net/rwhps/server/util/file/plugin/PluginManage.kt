@@ -13,7 +13,7 @@ import net.rwhps.server.data.bean.internal.BeanPluginInfo
 import net.rwhps.server.func.ConsSeq
 import net.rwhps.server.game.event.EventGlobalManage
 import net.rwhps.server.game.event.EventManage
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.game.event.core.EventListenerHost
 import net.rwhps.server.plugin.Plugin
 import net.rwhps.server.plugin.PluginLoadData
@@ -39,7 +39,7 @@ object PluginManage {
     val loadSize: Int
         get() = pluginData!!.size
 
-    internal fun runGlobalEventManage(abstractGlobalEvent: AbstractGlobalEvent): AbstractFuture<*> {
+    internal fun runGlobalEventManage(abstractGlobalEvent: AbstractGlobalEventImpl): AbstractFuture<*> {
         return pluginGlobalEventManage.fire(abstractGlobalEvent)
     }
 

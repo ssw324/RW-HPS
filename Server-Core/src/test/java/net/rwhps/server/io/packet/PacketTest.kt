@@ -9,7 +9,7 @@
 
 package net.rwhps.server.io.packet
 
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

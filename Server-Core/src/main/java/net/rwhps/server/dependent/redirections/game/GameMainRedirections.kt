@@ -24,12 +24,11 @@ import net.rwhps.server.util.inline.findMethod
 import net.rwhps.server.util.inline.toClassAutoLoader
 import net.rwhps.server.util.log.Log
 
-
 //关闭傻逼格式化
 //@formatter:off
 
 /**
- * Network blocking and proxy
+ * 游戏无头实现
  *
  * @author Dr (dr@der.kim)
  */
@@ -42,12 +41,15 @@ class GameMainRedirections: MainRedirections {
         CustomRedirections().register()
         /* Register for network blocking */
         NetPacketRedirections().register()
+        /* */
+        ValueLinkRedirections().register()
+        /* 清理废包 */
         CleanRedirections().register()
 
 
-        // Remove Main-Loop
+        // Remove Main-Loop, 使游戏使用 Slick 自带 gameLoop
         redirectRemove(MethodTypeInfoValue("com/corrodinggames/rts/java/b", "gameLoop", "()V"))
-
+        // 为游戏添加一个锁帧 (解决CPU高占用)
         redirectL(MethodTypeInfoValue("com/corrodinggames/rts/java/b", "updateAndRender", "(I)V", true, FPSSleepRedirections::class.java))
 
 
@@ -65,10 +67,14 @@ class GameMainRedirections: MainRedirections {
         // 关闭MusicController
         @GameSimulationLayer.GameSimulationLayer_KeyWords("startNewFrame() not supported on SlickLibRocket")
         addAllReplace("com/corrodinggames/rts/java/d/a")
-        addAllReplace("com/corrodinggames/rts/java/s")
+        // 图像渲染
+//        @GameSimulationLayer.GameSimulationLayer_KeyWords("reloadFromImageData:")
+//        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/java/s", "a", "(Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;"), BasicParamsValueRedirections.ReturnSecondParams)
+//        // 渲染
+//        //addAllReplace("com/corrodinggames/rts/gameFramework/m/e")
         addAllReplace("com/corrodinggames/rts/gameFramework/am", true)
-        // 渲染
-        addAllReplace("com/corrodinggames/rts/java/e", true)
+//        // 渲染
+//        addAllReplace("com/corrodinggames/rts/java/e", true)
 
         /* 恢复-Root */
         redirectR(
@@ -113,10 +119,11 @@ class GameMainRedirections: MainRedirections {
             0
         }
 
+        // 游戏引擎加载完毕时触发
         @GameSimulationLayer.GameSimulationLayer_KeyWords("Game init finished in")
         redirectL(MethodTypeInfoValue("com/corrodinggames/rts/java/Main", "h", "()V", false)) { obj: Any?, _: String, _: Array<out Any?> ->
             // Enable the interface
-            "${HessClassPathProperties.CorePath}.GameEngine".toClassAutoLoader(obj!!)!!.findMethod("init")!!.invoke(null)
+            "${HessClassPathProperties.corePath}.GameEngine".toClassAutoLoader(obj!!)!!.findMethod("init")!!.invoke(null)
 
             obj::class.java.classLoader.toString().let { loadID ->
                 PluginManage.runGlobalEventManage(ServerHessLoadEvent(loadID, HeadlessModuleManage.hessLoaderMap[loadID]!!))
@@ -124,6 +131,7 @@ class GameMainRedirections: MainRedirections {
 
         }
 
+        // 保存Replay时触发
         @GameSimulationLayer.GameSimulationLayer_KeyWords("Recording replay to:")
         redirectL(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/ba", "d", "(Ljava/lang/String;)V", true)) { obj: Any?, _: String, args: Array<out Any?> ->
             Log.clog("Save Replay to: {0}", args[0].also { replayFileName ->

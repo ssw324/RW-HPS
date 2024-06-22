@@ -32,8 +32,8 @@ object GameStartInit {
     private enum class ResMD5(val md5: String, val fileUtils: FileUtils) {
         Res("408aa02d8566a771c5ad97caf9f1f701", gameCorePath.toFile("Game-Res.7z")),
         Fonts("e27f86783a04bb6c7bc7b4388f8c8539", gameCorePath.toFile("Game-Fonts.7z")),
-        Assets("7d2fbd504a71c72756a86de5becb93fd", gameCorePath.toFile("Game-Assets.7z")),
-        GameModularReusableClass("2807a71411dafc570fa9a98bc3206899", gameCorePath.toFile("GameModularReusableClass.bin"))
+        Assets("7c50a14a5d2c6570e0b815d146c446f0", gameCorePath.toFile("Game-Assets.7z")),
+        GameModularReusableClass("823515512b13234b6607927b599acbf7", gameCorePath.toFile("GameModularReusableClass.bin"))
     }
 
     fun init(load: GameModularReusableLoadClass): Boolean {
@@ -49,9 +49,12 @@ object GameStartInit {
             }
 
             val resTask: (FileUtils, String, Boolean) -> Unit = { file, resName, unzip ->
-                if (!file.exists()) {
+                if (!file.exists() && file.length() == 0L) {
                     if (unzip) {
                         temp.toFolder(resName).file.delete()
+                    }
+                    if (file.length() == 0L) {
+                        file.delete()
                     }
 
                     DownloadManage.addDownloadTask(DownloadManage.DownloadData(Data.urlData.readString("Get.Core.ResDown") + file.name, file, progressFlag = true)).also {
@@ -88,6 +91,9 @@ object GameStartInit {
                         load.addSourceJar(v)
                     }
                 }
+                // 一些必须的覆盖 - 解决Summon爆炸
+                //load.addClassBytes("com.corrodinggames.rts.gameFramework.c", CommandArrayListCoverSyncList.build(), true)
+
                 //TODO Save GameModularReusableClass
                 load.saveData(FileUtils.getFolder(Data.ServerDataPath).toFile("GameModularReusableClass.bin"))
             }
@@ -107,9 +113,11 @@ object GameStartInit {
             CompressionDecoderUtils.zipAllReadStream(FileUtils.getMyCoreJarStream()).use {
                 it.getZipAllBytes().eachAll { k, v ->
                     if (
-                    // 注入接口
-                        k.startsWith(HessClassPathProperties.path.replace(".", "/")) ||
-                        // 覆写游戏
+                        // 注入接口
+                        k.startsWith(HessClassPathProperties.headlessPath.replace(".", "/")) ||
+                        // 注入 ASM 的 FastClass, 使其缓解变量问题
+                        k.startsWith(HessClassPathProperties.fastASMClassPath.replace(".", "/")) ||
+                        // 覆写游戏的一些Class
                         k.startsWith(HessClassPathProperties.GameHessPath.replace(".", "/"))) {
                         val name = k.replace(".class", "")
                         load.addClassBytes(name.replace("/", "."), v)
@@ -120,7 +128,20 @@ object GameStartInit {
             val testAClass: Class<*> = load.findClass("com.corrodinggames.rts.java.Main")!!
             val mainMethod: Method = testAClass.getDeclaredMethod("main", Array<String>::class.java)
             // 禁用软件加速/关声音/关音乐/不渲染
-            mainMethod.invoke(null, arrayOf("-disable_vbos", "-disable_atlas", "-nomusic", "-nosound", "-nodisplay", "-noresources"))
+            // 不要使用 "-noresources", 虽然会不渲染, 但是会导致replay等不生成 (因为渲染被关闭了), 如果用其他方案绕过会有一些问题
+            mainMethod.invoke(null, arrayOf("-disable_vbos", "-disable_atlas", "-nomusic", "-nosound", "-nodisplay"))
         }
     }
+
+    /**
+     * 谢谢您看到这里
+     *
+     * 在 RW-HPS 的开发历程中, 离不开以下的帮助 !
+     *
+     * RW-HPS Staff
+     * [RukkitDev/Rukkit] Miku
+     * [RW-HPS] 全体
+     *
+     * 感谢一路的陪伴。新的开发不会就此结束，新的征程即将就此开始
+     */
 }

@@ -21,6 +21,7 @@ import net.rwhps.server.dependent.LibraryManager
 import net.rwhps.server.game.manage.HeadlessModuleManage
 import net.rwhps.server.game.room.RelayRoom
 import net.rwhps.server.io.GameOutputStream
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.net.NetService
 import net.rwhps.server.net.core.IRwHps
 import net.rwhps.server.net.core.server.AbstractNetConnect
@@ -209,7 +210,8 @@ class Initialization {
         @Volatile
         private var isClose = true
 
-        internal fun startInit(pluginData: PluginData) {
+        internal fun startInit() {
+            val pluginData = Data.core.settings
             initServerLanguage(pluginData)
             eula(pluginData)
         }
@@ -306,16 +308,12 @@ class Initialization {
             FileUtils.getInternalFileStream("/maven/TimeTaskQuartz/implementation.txt").readFileListString().eachAll(libImport)
 
 
-            fun downCustomLibs(fileUtils: FileUtils) {
-                if (!fileUtils.exists() && !DownloadManage.addDownloadTask(DownloadManage.DownloadData(Data.urlData.readString("Get.Core.ResDown") + "Wasm.zip", fileUtils, progressFlag = true))) {
-                    Log.fatal("${fileUtils.name} Down Error")
-                    return
-                }
-                if (fileUtils.name.endsWith(".jar")) {
-                    libraryManager.customImportLib(fileUtils)
-                }
+            val wasm = FileUtils.getFolder(Data.ServerLibPath).toFile("Wasm.jar")
+            if (!wasm.exists() && !DownloadManage.addDownloadTask(DownloadManage.DownloadData(Data.urlData.readString("Get.Core.ResDown") + "Wasm.zip", wasm, progressFlag = true))) {
+                Log.fatal("WASM Down Error")
+                return
             }
-            downCustomLibs(FileUtils.getFolder(Data.ServerLibPath).toFile("Wasm.jar"))
+            libraryManager.customImportLib(wasm)
 
             libraryManager.loadToClassLoader()
 
@@ -337,7 +335,10 @@ class Initialization {
             @PrivateMark
             ServiceLoader.addService(ServiceType.Protocol, IRwHps.NetType.RelayMulticastProtocol.name, GameVersionRelayRebroadcast::class.java)
 
-            ServiceLoader.addService(ServiceType.ProtocolPacket, IRwHps.NetType.ServerProtocol.name, GameVersionPacket::class.java)
+            ServiceLoader.addService(ServiceType.ProtocolPacket, IRwHps.NetType.GlobalProtocol.name, GameVersionPacket::class.java)
+
+            ServiceLoader.addServiceObject(ServiceType.PacketType, IRwHps.NetType.GlobalProtocol.name, PacketType.INSTANCE)
+
             ServiceLoader.addService(ServiceType.IRwHps, "IRwHps", RwHps::class.java)
         }
 

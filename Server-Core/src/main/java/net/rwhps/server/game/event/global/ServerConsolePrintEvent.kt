@@ -9,7 +9,7 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.util.annotations.core.EventOnlyRead
 
 /**
@@ -17,4 +17,4 @@ import net.rwhps.server.util.annotations.core.EventOnlyRead
  * @author Dr (dr@der.kim)
  */
 @EventOnlyRead
-class ServerConsolePrintEvent(val print: String): AbstractGlobalEvent
+class ServerConsolePrintEvent(val print: String): AbstractGlobalEventImpl

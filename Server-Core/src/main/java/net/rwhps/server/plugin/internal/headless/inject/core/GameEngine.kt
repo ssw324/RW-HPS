@@ -35,7 +35,8 @@ import net.rwhps.server.plugin.internal.headless.inject.core.link.LinkGameNet
 import net.rwhps.server.plugin.internal.headless.inject.core.link.LinkGameServerData
 import net.rwhps.server.plugin.internal.headless.inject.core.scripts.ScriptMultiPlayer
 import net.rwhps.server.plugin.internal.headless.inject.core.scripts.ScriptRoot
-import net.rwhps.server.plugin.internal.headless.inject.net.HessRwHps
+import net.rwhps.server.plugin.internal.headless.inject.net.GameVersionServer
+import net.rwhps.server.plugin.internal.headless.inject.net.HeadlessTypeConnect
 import net.rwhps.server.util.inline.accessibleConstructor
 import net.rwhps.server.util.inline.findField
 import net.rwhps.server.util.inline.toClass
@@ -93,6 +94,8 @@ internal object GameEngine {
             override val useClassLoader: ClassLoader = loader
             override val eventManage: EventManage = EventManage()
 
+            override val gameData: AbstractGameData = GameData()
+
             override val gameFast: AbstractGameFast = GameFast()
             override val gameHessData: AbstractGameHessData = GameHessData()
             override val gameUnitData: AbstractGameUnitData = GameUnitData()
@@ -110,7 +113,8 @@ internal object GameEngine {
             data = it
         })
 
-        ServiceLoader.addService(ServiceLoader.ServiceType.IRwHps, IRwHps.NetType.ServerProtocol.name, HessRwHps::class.java)
+        ServiceLoader.addService(ServiceLoader.ServiceType.ProtocolType, IRwHps.NetType.ServerProtocol.name, HeadlessTypeConnect::class.java)
+        ServiceLoader.addService(ServiceLoader.ServiceType.Protocol, IRwHps.NetType.ServerProtocol.name, GameVersionServer::class.java)
 
         /* Register Server Protocol Command */
         ServerCommands(HessMain.serverServerCommands)

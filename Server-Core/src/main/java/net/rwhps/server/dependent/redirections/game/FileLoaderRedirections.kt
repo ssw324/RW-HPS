@@ -13,6 +13,8 @@ import net.rwhps.asm.data.MethodTypeInfoValue
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.dependent.redirections.MainRedirections
 import net.rwhps.server.dependent.redirections.slick.SilckClassPathProperties
+import net.rwhps.server.io.input.DisableSyncByteArrayInputStream
+import net.rwhps.server.io.output.ByteArrayOutputStream
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.struct.map.OrderedMap
 import net.rwhps.server.util.ReflectionUtils
@@ -24,9 +26,12 @@ import net.rwhps.server.util.file.FileName
 import net.rwhps.server.util.file.FileUtils
 import net.rwhps.server.util.inline.*
 import net.rwhps.server.util.log.Log
+import java.awt.Color
+import java.awt.image.BufferedImage
 import java.io.*
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
+import javax.imageio.ImageIO
 
 //关闭傻逼格式化
 //@formatter:off
@@ -112,7 +117,33 @@ class FileLoaderRedirections: MainRedirections {
 
         // 重定向资源文件系统 (Assets FileSystem)
         redirectR(MethodTypeInfoValue("android/content/res/AssetManager", "a", "(Ljava/lang/String;I)Ljava/io/InputStream;")) { _: Any, _: String, _: Class<*>, args: Array<out Any?> ->
-            return@redirectR FileInputStream("${resAndAssetsPath}assets/${args[0]}")
+            val name = args[0].toString()
+            return@redirectR FakeHessRes.fakeImageAndMusic(name) ?:FileInputStream("${resAndAssetsPath}assets/$name")
+        }
+
+        // 重定向 流系统
+        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "i", "(Ljava/lang/String;)Lcom/corrodinggames/rts/gameFramework/utility/j;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
+            var str = args[0].toString().replace(resAndAssetsPath, "").replace("\\", "/")
+
+            if (str.startsWith("assets/") || str.startsWith("assets\\")) {
+                str = str.substring("assets/".length)
+            }
+            val str2: String = str
+            val str3 = resAndAssetsPath + "assets/" + str2
+            return@redirectR try {
+                try {
+                    // AssetManager
+                    findNewClass_AssetInputStream(obj, InputStream::class.java, String::class.java, String::class.java).newInstance(
+                            FakeHessRes.fakeImageAndMusic(str2) ?:FileInputStream("${resAndAssetsPath}assets/${str2}")
+                            , str3, str2
+                    )
+                } catch (e: FileNotFoundException) {
+                    null
+                }
+            } catch (e2: IOException) {
+                Log.error(fileSystemAsm + "Could not find asset:" + str3)
+                null
+            }
         }
 
         redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "f", "(Ljava/lang/String;)Ljava/lang/String;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
@@ -185,30 +216,6 @@ class FileLoaderRedirections: MainRedirections {
                 d
             }
         }
-
-        // 重定向 流系统
-        redirectR(MethodTypeInfoValue("com/corrodinggames/rts/gameFramework/e/c", "i", "(Ljava/lang/String;)Lcom/corrodinggames/rts/gameFramework/utility/j;")) { obj: Any, _: String, _: Class<*>, args: Array<out Any?> ->
-            var str = args[0].toString().replace(resAndAssetsPath, "").replace("\\", "/")
-
-            if (str.startsWith("assets/") || str.startsWith("assets\\")) {
-                str = str.substring("assets/".length)
-            }
-            val str2: String = str
-            val str3 = resAndAssetsPath + "assets/" + str2
-            return@redirectR try {
-                try {
-                    // AssetManager
-                    findNewClass_AssetInputStream(obj, InputStream::class.java, String::class.java, String::class.java).newInstance(
-                            FileInputStream("${resAndAssetsPath}assets/${str2}"), str3, str2
-                    )
-                } catch (e: FileNotFoundException) {
-                    null
-                }
-            } catch (e2: IOException) {
-                Log.error(fileSystemAsm + "Could not find asset:" + str3)
-                null
-            }
-        }
     }
 
 
@@ -223,5 +230,34 @@ class FileLoaderRedirections: MainRedirections {
         return ReflectionUtils.accessibleConstructor(
                 Class.forName("com.corrodinggames.rts.gameFramework.utility.j", true, obj::class.java.classLoader), *paramTypes
         )
+    }
+
+    private object FakeHessRes {
+        private val imagePngBytes = fakeImage("png")
+        private val imageJpgBytes = fakeImage("jpg")
+
+        fun fakeImageAndMusic(name: String): InputStream? {
+            return when (name.substring(name.lastIndexOf(".") + 1)) {
+                "png" -> DisableSyncByteArrayInputStream(imagePngBytes)
+                "jpg" -> DisableSyncByteArrayInputStream(imageJpgBytes)
+                "ogg" -> DisableSyncByteArrayInputStream(byteArrayOf(0))
+                else -> null
+            }
+        }
+
+        private fun fakeImage(imageType: String): ByteArray {
+            val width = 128
+            val height = 128
+
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+            val g2d = image.createGraphics()
+            g2d.color = Color(0, 0, 0, 0)
+            g2d.fillRect(0, 0, width, height)
+            g2d.dispose()
+
+            val outputFile = ByteArrayOutputStream()
+            ImageIO.write(image, imageType, outputFile)
+            return outputFile.toByteArray()
+        }
     }
 }

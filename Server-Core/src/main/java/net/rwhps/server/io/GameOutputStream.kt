@@ -16,7 +16,7 @@ import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.io.output.DisableSyncByteArrayOutputStream
 import net.rwhps.server.io.packet.Packet
 import net.rwhps.server.util.IsUtils
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import java.io.Closeable
 import java.io.DataOutputStream
 import java.io.IOException

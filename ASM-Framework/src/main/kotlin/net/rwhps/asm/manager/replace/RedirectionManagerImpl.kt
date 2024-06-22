@@ -10,7 +10,7 @@
 package net.rwhps.asm.manager.replace
 
 import net.rwhps.asm.api.replace.RedirectionReplace
-import net.rwhps.asm.data.ReplaceRedirectionsDataManager
+import net.rwhps.asm.data.manager.ReplaceRedirectionsDataManager
 import java.util.function.Supplier
 
 class RedirectionManagerImpl: AbstractRedirectionManagerImpl() {

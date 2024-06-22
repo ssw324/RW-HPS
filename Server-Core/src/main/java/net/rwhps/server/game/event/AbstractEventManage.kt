@@ -22,7 +22,7 @@ import net.rwhps.server.util.game.Events
 import java.lang.reflect.Modifier
 
 /**
- * EventManage 的分别实现
+ * EventManage 的主要实现
  *
  * @date 2023/7/5 14:44
  * @author Dr (dr@der.kim)
@@ -38,6 +38,7 @@ internal abstract class AbstractEventManage(private val eventClass: Class<*>) {
      * @param eventListen EventListenerHost
      */
     fun registerListener(eventListen: EventListenerHost) {
+        // 判断是不是继承事件, 并扫描有效类 (注解)
         ReflectionUtils.getAllDeclaredMethods(eventListen::class.java).forEach { method ->
             method.getAnnotation(EventListenerHandler::class.java) ?: return@forEach
             val parameterTypes = method.parameterTypes

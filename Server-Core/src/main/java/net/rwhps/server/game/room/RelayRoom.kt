@@ -30,13 +30,11 @@ import net.rwhps.server.util.annotations.mark.PrivateMark
 import net.rwhps.server.util.annotations.mark.SynchronizeMark
 import net.rwhps.server.util.concurrent.lock.ReadWriteConcurrentSynchronize
 import net.rwhps.server.util.concurrent.lock.Synchronize
-import net.rwhps.server.util.concurrent.threads.GetNewThreadPool
 import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.log.Log.debug
 import net.rwhps.server.util.math.Rand
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.ExecutorService
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 
@@ -73,6 +71,8 @@ class RelayRoom {
     val relayPlayersData: ObjectMap<String, PlayerRelay> = ObjectMap()
     var replacePlayerHex = ""
 
+    val banUnit = Seq<String>()
+
     /**
      * 房间是否关闭
      */
@@ -102,6 +102,7 @@ class RelayRoom {
         } else {
             0
         }
+
         return@Synchronize it
     })
 
@@ -118,8 +119,6 @@ class RelayRoom {
 
     private val site = AtomicInteger(0)
     private val size = AtomicInteger()
-
-    private val packetProcessThread: ExecutorService
 
     /**
      * 实例化一个房间
@@ -140,7 +139,6 @@ class RelayRoom {
         this.id = id
         groupNet = GroupNet()
         this.isMod = isMod
-        packetProcessThread = GetNewThreadPool.getNewSingleThreadExecutor("RELAY-PacketThread: $id")
     }
 
     /**
@@ -154,7 +152,6 @@ class RelayRoom {
         this.internalID = 0
         this.id = id
         this.groupNet = groupNet
-        packetProcessThread = GetNewThreadPool.getNewSingleThreadExecutor("RELAY-PacketThread: $id")
     }
 
     val allIP: String
@@ -180,7 +177,7 @@ class RelayRoom {
     fun sendMsg(msg: String) {
         try {
             admin!!.sendPacket(NetStaticData.RwHps.abstractNetPacket.getSystemMessagePacket(msg))
-            groupNet.broadcastAndUDP(NetStaticData.RwHps.abstractNetPacket.getSystemMessagePacket(msg))
+            //groupNet.broadcastAndUDP(NetStaticData.RwHps.abstractNetPacket.getSystemMessagePacket(msg))
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -189,7 +186,7 @@ class RelayRoom {
     fun sendMsg(msg: String, msgName: String, team: Int) {
         try {
             admin!!.sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(msg, msgName, team))
-            groupNet.broadcastAndUDP(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(msg, msgName, team))
+            //groupNet.broadcastAndUDP(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(msg, msgName, team))
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -242,8 +239,6 @@ class RelayRoom {
         }
     }
 
-    fun addPacketProcess(runnable: Runnable) = packetProcessThread.execute(runnable)
-
     fun re() {
         removeRoom()
     }
@@ -253,7 +248,6 @@ class RelayRoom {
             groupNet.disconnect()
             admin?.disconnect()
             abstractNetConnectIntMap.values.forEach { it.disconnect() }
-            packetProcessThread.shutdownNow()
             closeRoom = true
             abstractNetConnectIntMap.clear()
             site.set(0)

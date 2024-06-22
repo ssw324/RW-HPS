@@ -9,7 +9,6 @@
 
 package net.rwhps.server.core
 
-import net.rwhps.server.core.thread.Threads.addSavePool
 import net.rwhps.server.core.thread.Threads.runSavePool
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.net.Administration
@@ -18,6 +17,7 @@ import net.rwhps.server.util.file.FileUtils
 import net.rwhps.server.util.file.plugin.PluginData
 import net.rwhps.server.util.file.plugin.PluginManage.runOnDisable
 import net.rwhps.server.util.file.plugin.serializer.SerializersEnum
+import net.rwhps.server.util.file.plugin.value
 import net.rwhps.server.util.log.Log
 import net.rwhps.server.util.math.RandomUtils.getRandomString
 import java.math.BigInteger
@@ -29,42 +29,21 @@ import java.util.*
  */
 class Application {
     /** 服务器 Setting 主数据 */
-    val settings: PluginData = PluginData(SerializersEnum.Bin.create())
+    val settings: PluginData = PluginData(SerializersEnum.Bin.create()).apply {
+        setFileUtil(FileUtils.getFolder(Data.ServerDataPath).toFile("Settings.bin"))
+    }
 
     /** 服务器唯一UUID  */
-    lateinit var serverConnectUuid: String
-
+    val serverConnectUuid by settings.value(UUID.randomUUID().toString())
     /** Hess HEX */
-    lateinit var serverHessUuid: String
+    val serverHessUuid by settings.value(BigInteger(1, DigestUtils.sha256(serverConnectUuid + UUID.randomUUID().toString())).toString(16).uppercase())
 
     @JvmField
     var serverToken: String = getRandomString(40)
-    lateinit var admin: Administration
+    val admin: Administration = Administration(settings)
 
     @JvmField
     var upServerList = false
-
-    /**
-     * 加载并读取 Setting 主数据
-     */
-    fun load() {
-        settings.setFileUtil(FileUtils.getFolder(Data.ServerDataPath).toFile("Settings.bin"))
-        admin = Administration(settings)
-
-        Initialization.startInit(settings)
-
-        serverConnectUuid = settings.get("serverConnectUuid") {
-            UUID.randomUUID().toString()
-        }
-        serverHessUuid = settings.get("serverHessUuid") {
-            BigInteger(1, DigestUtils.sha256(serverConnectUuid + UUID.randomUUID().toString())).toString(16).uppercase()
-        }
-
-        addSavePool {
-            settings.set("serverConnectUuid", serverConnectUuid)
-            settings.set("serverHessUuid", serverHessUuid)
-        }
-    }
 
     /**
      * 服务器退出时保存数据

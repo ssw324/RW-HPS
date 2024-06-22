@@ -10,7 +10,7 @@ package net.rwhps.server.util.game
 
 import kotlinx.coroutines.*
 import net.rwhps.server.func.Control
-import net.rwhps.server.game.event.core.AbstractEventCore
+import net.rwhps.server.game.event.core.AbstractEvent
 import net.rwhps.server.struct.map.ObjectMap
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.util.annotations.core.EventOnlyRead
@@ -68,7 +68,7 @@ class Events {
     }
 
     private fun <T> runAsync(async: Seq<Job>, e: (T) -> Any?, type: T) {
-        if (type is AbstractEventCore) {
+        if (type is AbstractEvent) {
             if (type.status() == Control.EventNext.CONTINUE) {
                 e(type).ifNull({
                     if (it is Job) {

@@ -17,7 +17,7 @@ import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine
 import net.rwhps.server.util.ExtractUtils
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.util.Time
 import net.rwhps.server.util.annotations.DidNotFinish
 import net.rwhps.server.util.game.CommonUtils

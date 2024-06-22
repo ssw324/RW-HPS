@@ -11,6 +11,7 @@ package net.rwhps.server.plugin.beta.http.post.run
 
 import net.rwhps.server.data.global.Data
 import net.rwhps.server.game.manage.HeadlessModuleManage
+import net.rwhps.server.game.player.PlayerHess
 import net.rwhps.server.game.player.unofficial.Cherry
 import net.rwhps.server.net.http.AcceptWeb
 import net.rwhps.server.net.http.SendWeb
@@ -30,7 +31,7 @@ object ClientCommand : AbstractPost() {
         val result = StringBuilder()
         checkStringPost(accept, send, "runCommand")?.let { command ->
             val nmsl = Cherry()
-            HeadlessModuleManage.hps.room.clientHandler.handleMessage(command, nmsl)
+            HeadlessModuleManage.hps.room.clientHandler.handleMessage("/" + command.removePrefix("."), nmsl as PlayerHess)
             result.append(nmsl.outString.joinToString(Data.LINE_SEPARATOR))
             send.setData(result.toString().toWebStatusJson())
         }

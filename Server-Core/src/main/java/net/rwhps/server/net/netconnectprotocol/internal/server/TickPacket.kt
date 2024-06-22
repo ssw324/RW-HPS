@@ -20,7 +20,7 @@ import net.rwhps.server.io.output.CompressOutputStream
 import net.rwhps.server.io.packet.GameCommandPacket
 import net.rwhps.server.io.packet.Packet
 import net.rwhps.server.struct.list.Seq
-import net.rwhps.server.util.PacketType
+import net.rwhps.server.io.packet.type.PacketType
 import java.io.IOException
 
 /**

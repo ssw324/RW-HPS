@@ -22,12 +22,22 @@ import net.rwhps.server.util.log.exp.VariableException
 object Statisticians {
     private val time = ObjectMap<String, Long>()
 
+    /**
+     * 设置一个ID绑定启始时间
+     *
+     * @param name ID
+     */
     fun addTime(name: String) {
         if (time.contains(name)) {
             throw VariableException.RepeatAddException("[Statisticians.Time] Add $name")
         }
         time[name] = Time.millis()
     }
+    /**
+     * 通过ID获取时间差异
+     * @param name String
+     * @return Long
+     */
     fun computeTime(name: String): Long {
         return Time.millis() - time.remove(name)!!
     }

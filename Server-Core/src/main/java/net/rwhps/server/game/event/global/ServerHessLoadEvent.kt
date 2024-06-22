@@ -9,7 +9,7 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.game.headless.core.AbstractGameModule
 
 /**
@@ -18,4 +18,4 @@ import net.rwhps.server.game.headless.core.AbstractGameModule
  * @date 2023/7/5 10:00
  * @author Dr (dr@der.kim)
  */
-class ServerHessLoadEvent(val loadID: String, val gameModule: AbstractGameModule): AbstractGlobalEvent
+class ServerHessLoadEvent(val loadID: String, val gameModule: AbstractGameModule): AbstractGlobalEventImpl

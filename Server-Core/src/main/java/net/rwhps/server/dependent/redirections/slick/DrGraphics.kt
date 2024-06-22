@@ -11,74 +11,46 @@ package net.rwhps.server.dependent.redirections.slick
 
 import org.newdawn.slick.Graphics
 import org.newdawn.slick.Image
-import org.newdawn.slick.SlickException
 import org.newdawn.slick.util.Log
+
 
 /**
  * 无头图形
  *
  * @author Dr (dr@der.kim)
  */
-class DrGraphics(image: Image): Graphics(image.texture.textureWidth, image.texture.textureHeight) {
+class DrGraphics(
+    image: Image
+): Graphics(image.texture.textureWidth, image.texture.textureHeight) {
     init {
         Log.debug("Creating Dr " + image.width + "x" + image.height)
-        init()
-    }
-
-    /**
-     * Initialise the FBO that will be used to render to
-     *
-     * @throws SlickException
-     */
-    @Throws(SlickException::class)
-    private fun init() {/* ASM: ignore */
-    }
-
-    /**
-     * Bind to the FBO created
-     */
-    private fun bind() {/* ASM: ignore */
-    }
-
-    /**
-     * Unbind from the FBO created
-     */
-    private fun unbind() {/* ASM: ignore */
     }
 
     /**
      * @see Graphics.disable
      */
-    override fun disable() {/* ASM: ignore */
+    override fun disable() {
+        /* ASM: ignore */
     }
 
     /**
      * @see Graphics.enable
      */
-    override fun enable() {/* ASM: ignore */
-    }
-
-    /**
-     * Initialise the GL context
-     */
-    protected fun initGL() {/* ASM: ignore */
-    }
-
-    /**
-     * Enter the orthographic mode
-     */
-    protected fun enterOrtho() {/* ASM: ignore */
+    override fun enable() {
+        /* ASM: ignore */
     }
 
     /**
      * @see Graphics.destroy
      */
-    override fun destroy() {/* ASM: ignore */
+    override fun destroy() {
+        /* ASM: ignore */
     }
 
     /**
      * @see Graphics.flush
      */
-    override fun flush() {/* ASM: ignore */
+    override fun flush() {
+        /* ASM: ignore */
     }
 }

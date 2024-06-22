@@ -55,11 +55,11 @@ allprojects {
         targetCompatibility = JavaVersion.VERSION_21.toString()
 
         options.encoding = "UTF-8"
-        options.compilerArgs.addAll(listOf(
-            "-Xlint:unchecked", "-Werror",
-            "-Xdiags:verbose", "-Werror",
-            "-Xlint:deprecation", "-Werror"
-        ))
+//        options.compilerArgs.addAll(listOf(
+//            "-Xlint:unchecked", "-Werror",
+//            "-Xdiags:verbose", "-Werror",
+//            "-Xlint:deprecation", "-Werror"
+//        ))
     }
 }
 

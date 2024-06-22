@@ -10,7 +10,8 @@
 package net.rwhps.server.game.event.game
 
 import net.rwhps.server.data.unit.ActionIdData
-import net.rwhps.server.game.event.core.AbstractEvent
+import net.rwhps.server.game.event.core.AbstractEventImpl
+import net.rwhps.server.game.headless.core.AbstractGameModule
 import net.rwhps.server.game.player.PlayerHess
 
 /**
@@ -20,8 +21,9 @@ import net.rwhps.server.game.player.PlayerHess
  * @author Dr (dr@der.kim)
  */
 class PlayerOperationFactoryBuildUnitEvent(
+    override val gameModule: AbstractGameModule,
     val player: PlayerHess, val actionIdData: ActionIdData
-) : AbstractEvent {
+) : AbstractEventImpl {
     // 操作是否有效
     @JvmField
     var resultStatus = true

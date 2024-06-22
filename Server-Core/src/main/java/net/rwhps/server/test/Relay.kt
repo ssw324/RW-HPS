@@ -9,9 +9,9 @@
 
 package net.rwhps.server.test
 
+import net.rwhps.server.data.global.NetStaticData
 import net.rwhps.server.io.GameInputStream
 import net.rwhps.server.io.GameOutputStream
-import net.rwhps.server.util.PacketType
 import net.rwhps.server.util.compression.CompressionDecoderUtils
 import net.rwhps.server.util.file.FileUtils
 import net.rwhps.server.util.log.Log
@@ -31,7 +31,7 @@ class Relay {
             val length = read.readInt()
             val type = read.readInt()
             read.skip(length.toLong())
-            Log.debug(length, type.toString() + "   " + PacketType.from(type).name)
+            Log.debug(length, type.toString() + "   " + NetStaticData.RwHps.packetType.from(type).nameEnum)
         }
 
 

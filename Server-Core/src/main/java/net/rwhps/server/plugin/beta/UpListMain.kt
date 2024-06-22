@@ -15,17 +15,20 @@ import net.rwhps.server.data.global.Data
 import net.rwhps.server.data.global.NetStaticData
 import net.rwhps.server.func.StrCons
 import net.rwhps.server.game.manage.HeadlessModuleManage
-import net.rwhps.server.net.manage.HttpRequestManage
+import net.rwhps.server.net.NetService
 import net.rwhps.server.net.core.IRwHps
 import net.rwhps.server.net.core.server.AbstractNetConnectServer
+import net.rwhps.server.net.manage.HttpRequestManage
 import net.rwhps.server.plugin.Plugin
 import net.rwhps.server.util.IpUtils
 import net.rwhps.server.util.StringFilteringUtil.cutting
 import net.rwhps.server.util.algorithms.Base64
 import net.rwhps.server.util.file.json.Json
 import net.rwhps.server.util.game.command.CommandHandler
+import net.rwhps.server.util.inline.ifNullResult
 import net.rwhps.server.util.log.Log
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 
 internal class UpListMain: Plugin() {
@@ -119,6 +122,8 @@ internal class UpListMain: Plugin() {
             } else {
                 initUpListData(newUrl)
             }
+        } else if (resultUpList.startsWith("[-0]")) {
+            Log.error("[UPLIST Info] ${resultUpList.removePrefix("[-0]")}")
         } else if (resultUpList.startsWith("[-5]")) {
             Log.error(resultUpList)
         }
@@ -154,8 +159,8 @@ internal class UpListMain: Plugin() {
         addData0 = addData0.replace("{RW-HPS.S.PORT}", port)
 
 
-        addData0 = addData0.replace("{RW-HPS.RW.MAP.NAME}", HeadlessModuleManage.hps.room.maps.mapName)
-        addData0 = addData0.replace("{RW-HPS.PLAYER.SIZE}", HeadlessModuleManage.hps.room.playerManage.playerGroup.size.toString())
+        addData0 = addData0.replace("{RW-HPS.RW.MAP.NAME}", getMapName)
+        addData0 = addData0.replace("{RW-HPS.PLAYER.SIZE}", serverPlayerSize.toString())
 
         addData0 = addData0.replace("{RW-HPS.PLAYER.SIZE.MAX}", Data.configServer.maxPlayer.toString())
 
@@ -196,9 +201,9 @@ internal class UpListMain: Plugin() {
         updateData0 = updateData0.replace("{RW-HPS.S.PORT}", port)
 
 
-        updateData0 = updateData0.replace("{RW-HPS.RW.MAP.NAME}", HeadlessModuleManage.hps.room.maps.mapName)
-        updateData0 = updateData0.replace("{RW-HPS.S.STATUS}", if (HeadlessModuleManage.hps.room.isStartGame) "ingame" else "battleroom")
-        updateData0 = updateData0.replace("{RW-HPS.PLAYER.SIZE}", HeadlessModuleManage.hps.room.playerManage.playerGroup.size.toString())
+        updateData0 = updateData0.replace("{RW-HPS.RW.MAP.NAME}", getMapName)
+        updateData0 = updateData0.replace("{RW-HPS.S.STATUS}", if (isRelay || HeadlessModuleManage.hps.room.isStartGame) "ingame" else "battleroom")
+        updateData0 = updateData0.replace("{RW-HPS.PLAYER.SIZE}", serverPlayerSize.toString())
 
 
         updateData0 = updateData0.replace("{RW-HPS.PLAYER.SIZE.MAX}", Data.configServer.maxPlayer.toString())
@@ -224,6 +229,17 @@ internal class UpListMain: Plugin() {
         }
     }
 
+    private val isRelay get() = (NetStaticData.ServerNetType == IRwHps.NetType.RelayProtocol || NetStaticData.ServerNetType == IRwHps.NetType.RelayMulticastProtocol)
+
+    private val getMapName get() = Data.config.subtitle.ifNullResult({ if (isRelay) "" else HeadlessModuleManage.hps.room.maps.mapName }) { cutting(it, 15) }
+
+    private val serverPlayerSize get() = AtomicInteger().apply {
+        if (isRelay) {
+            NetStaticData.netService.eachAllFind( { it.netType == NetService.Companion.NetTypeEnum.HeadlessNet }) { addAndGet(it.getConnectSize()) }
+        } else {
+            addAndGet(HeadlessModuleManage.hps.room.playerManage.playerGroup.size)
+        }
+    } .get()
 
     /**
      * Inject multiple languages into the server

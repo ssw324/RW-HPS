@@ -23,12 +23,12 @@ import net.rwhps.server.game.room.ServerRoom
 import net.rwhps.server.io.GameInputStream
 import net.rwhps.server.io.GameOutputStream
 import net.rwhps.server.io.output.CompressOutputStream
+import net.rwhps.server.io.packet.type.PacketType
 import net.rwhps.server.net.core.ConnectionAgreement
 import net.rwhps.server.plugin.internal.headless.inject.core.GameEngine
 import net.rwhps.server.plugin.internal.headless.inject.core.link.PrivateClassLinkPlayer
 import net.rwhps.server.plugin.internal.headless.inject.net.GameVersionServer
 import net.rwhps.server.plugin.internal.headless.inject.net.socket.HessSocket
-import net.rwhps.server.util.PacketType
 import java.util.concurrent.TimeUnit
 import com.corrodinggames.rts.gameFramework.j.c as PlayerConnect
 
@@ -44,16 +44,8 @@ class PlayerConnectX(
     var player: PlayerHess? = null
     lateinit var serverConnect: GameVersionServer
 
-    @Volatile
-    private var closeFlag = false
-
     @Synchronized
-    @Strictfp
     override fun a(p0: Boolean, p1: Boolean, p2: String?) {
-        if (closeFlag) {
-            return
-        }
-        closeFlag = true
         super.a(p0, p1, p2)
         serverConnect.disconnect()
     }
@@ -69,7 +61,7 @@ class PlayerConnectX(
 
                 serverConnect.player = player!!
 
-                GameEngine.data.eventManage.fire(PlayerJoinEvent(player!!))
+                GameEngine.data.eventManage.fire(PlayerJoinEvent(GameEngine.data, player!!))
 
                 if (!Threads.containsTimeTask(CallTimeTask.CallTeamTask)) {
                     Threads.newTimedTask(CallTimeTask.CallTeamTask, 0, 1, TimeUnit.SECONDS) {
@@ -137,6 +129,11 @@ class PlayerConnectX(
                                                 teamIn.transferToFixedLength(team, 13)
                                                 val name = team.readIsString()
                                                 teamIn.writeIsString(name)
+
+                                                //teamIn.writeBoolean(team.readBoolean())
+//                                                team.skip(4)
+//                                                teamIn.writeInt(99999)
+
                                                 teamIn.transferToFixedLength(team, 32)
 
                                                 // 可能存在 Hess 还没刷新的, 所以多来一次判断

@@ -12,6 +12,7 @@ package net.rwhps.asm.util.fast
 import net.rwhps.asm.api.replace.RedirectionReplace
 import net.rwhps.asm.redirections.replace.def.BasicDataRedirections
 import net.rwhps.asm.redirections.replace.def.BasicFunctionRedirections
+import net.rwhps.asm.redirections.replace.def.BasicParamsValueRedirections
 
 /**
  * Fast 基础数据, 避免走HashMap导致性能问题
@@ -46,6 +47,14 @@ object DefaultValueClass {
             BasicFunctionRedirections.NanosToMillis -> BasicFunctionRedirections.ValueClass.NanosToMillisValue::class.java
             BasicFunctionRedirections.Millis -> BasicFunctionRedirections.ValueClass.MillisValue::class.java
             BasicFunctionRedirections.Second -> BasicFunctionRedirections.ValueClass.SecondValue::class.java
+            else -> coverPrivateValueClassParamsValue(redirectionReplace)
+        }
+    }
+
+    fun coverPrivateValueClassParamsValue(redirectionReplace: RedirectionReplace): Class<out RedirectionReplace>? {
+        return when (redirectionReplace) {
+            BasicParamsValueRedirections.ReturnFirstParams -> BasicParamsValueRedirections.ValueClass.ReturnFirstParamsValue::class.java
+            BasicParamsValueRedirections.ReturnSecondParams -> BasicParamsValueRedirections.ValueClass.ReturnSecondParamsValue::class.java
             else -> null
         }
     }

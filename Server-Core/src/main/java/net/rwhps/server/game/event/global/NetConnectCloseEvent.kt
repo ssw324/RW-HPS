@@ -9,7 +9,7 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 import net.rwhps.server.net.core.ConnectionAgreement
 import net.rwhps.server.util.annotations.core.EventOnlyRead
 
@@ -18,4 +18,4 @@ import net.rwhps.server.util.annotations.core.EventOnlyRead
  * @author Dr (dr@der.kim)
  */
 @EventOnlyRead
-class NetConnectCloseEvent(val connectionAgreement: ConnectionAgreement): AbstractGlobalEvent
+class NetConnectCloseEvent(val connectionAgreement: ConnectionAgreement): AbstractGlobalEventImpl

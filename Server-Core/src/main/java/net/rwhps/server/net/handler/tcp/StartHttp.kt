@@ -10,10 +10,7 @@
 package net.rwhps.server.net.handler.tcp
 
 import io.netty.buffer.ByteBuf
-import io.netty.channel.ChannelDuplexHandler
-import io.netty.channel.ChannelHandler
-import io.netty.channel.ChannelHandlerContext
-import io.netty.channel.SimpleChannelInboundHandler
+import io.netty.channel.*
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.codec.http.*
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler
@@ -31,7 +28,6 @@ import net.rwhps.server.net.http.WebData
 import net.rwhps.server.net.http.WebData.Companion.WS_URI
 import net.rwhps.server.util.file.FileUtils
 import net.rwhps.server.util.log.Log
-import java.nio.charset.StandardCharsets
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.SSLContext
@@ -54,16 +50,12 @@ open class StartHttp: AbstractNet(), AbstractNetWeb {
         webData = data
     }
 
-    private fun isHttpReq(head: String): Boolean {
-        return head.startsWith("GET ") || head.startsWith("POST ") || head.startsWith("DELETE ") || head.startsWith(
-                "HEAD "
-        ) || head.startsWith(
-                "PUT "
-        )
+    override fun initChannel(socketChannel: SocketChannel) {
+        initChannel(socketChannel, true)
     }
 
-    override fun initChannel(socketChannel: SocketChannel) {
-        if (Data.config.ssl) {
+    protected fun initChannel(socketChannel: SocketChannel, ssl: Boolean) {
+        if (Data.config.sslEnable && (!Data.config.sslMixEnable || ssl)) {
             if (sslContext == null) {
                 sslContext = getSslContext()
             }
@@ -71,12 +63,12 @@ open class StartHttp: AbstractNet(), AbstractNetWeb {
             sslEngine.useClientMode = false
             socketChannel.pipeline().addLast("ssl", SslHandler(sslEngine))
         }
-        socketChannel.pipeline().addLast("http", object: SimpleChannelInboundHandler<Any>() {
+        socketChannel.pipeline().addLast("http", object: ChannelInboundHandlerAdapter() {
             @Throws(Exception::class)
-            override fun channelRead0(ctx: ChannelHandlerContext, msg: Any) {
+            override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
                 val firstData: ByteBuf = msg as ByteBuf
 
-                val headS: String = firstData.toString(StandardCharsets.UTF_8)
+                val headS: String = firstData.toString(Data.UTF_8)
                 if (isHttpReq(headS)) {
                     if (headS.startsWith("GET ${WS_URI}")) {
                         firstData.retain()
@@ -120,10 +112,10 @@ open class StartHttp: AbstractNet(), AbstractNetWeb {
 
                                     val url = request.uri()
 
-                                    if (request.method().equals(HttpMethod.GET)) {
+                                    if (request.method() == HttpMethod.GET) {
                                         webData.runWebGetInstance(url, request, send)
                                         return
-                                    } else if (request.method().equals(HttpMethod.POST)) {
+                                    } else if (request.method() == HttpMethod.POST) {
                                         if (msg is HttpContent) {
                                             val httpContent = msg as HttpContent
                                             val content = httpContent.content()
@@ -154,5 +146,13 @@ open class StartHttp: AbstractNet(), AbstractNetWeb {
         kmf.init(keyStore, filePass)
         sslContext.init(kmf.keyManagers, null, null)
         return sslContext
+    }
+
+    protected fun isHttpReq(head: String): Boolean {
+        return head.startsWith("GET ") || head.startsWith("POST ") || head.startsWith("DELETE ") || head.startsWith(
+                "HEAD "
+        ) || head.startsWith(
+                "PUT "
+        )
     }
 }

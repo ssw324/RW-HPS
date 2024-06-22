@@ -9,7 +9,8 @@
 
 package net.rwhps.server.game.event.game
 
-import net.rwhps.server.game.event.core.AbstractEvent
+import net.rwhps.server.game.event.core.AbstractEventImpl
+import net.rwhps.server.game.headless.core.AbstractGameModule
 import net.rwhps.server.struct.list.Seq
 import net.rwhps.server.struct.map.ObjectMap
 import net.rwhps.server.util.annotations.core.EventOnlyRead
@@ -21,7 +22,10 @@ import net.rwhps.server.util.annotations.core.EventOnlyRead
  * @author Dr (dr@der.kim)
  */
 @EventOnlyRead
-class ServerGameOverEvent(val gameOverData: GameOverData?): AbstractEvent {
+class ServerGameOverEvent(
+    override val gameModule: AbstractGameModule,
+    val gameOverData: GameOverData?
+): AbstractEventImpl {
     /**
      * @author Dr (dr@der.kim)
      */

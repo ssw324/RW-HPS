@@ -11,7 +11,7 @@ package net.rwhps.asm.manager.listener
 
 import net.rwhps.asm.api.listener.RedirectionListener
 import net.rwhps.asm.api.listener.RedirectionListenerManager
-import net.rwhps.asm.data.ListenerRedirectionsDataManager
+import net.rwhps.asm.data.manager.ListenerRedirectionsDataManager
 import java.util.function.Supplier
 
 class RedirectionListenerManagerImpl: RedirectionListenerManager {

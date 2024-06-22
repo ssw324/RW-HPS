@@ -9,6 +9,6 @@
 
 package net.rwhps.server.game.event.global
 
-import net.rwhps.server.game.event.core.AbstractGlobalEvent
+import net.rwhps.server.game.event.core.AbstractGlobalEventImpl
 
-class ServerLoadEvent: AbstractGlobalEvent
+class ServerLoadEvent: AbstractGlobalEventImpl
